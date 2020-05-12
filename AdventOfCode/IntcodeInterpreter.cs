@@ -5,8 +5,8 @@ namespace AdventOfCode
 {
     public class IntcodeInterpreter
     {
-        private readonly string initialMemory;
-        private int[] memory;
+        private readonly int[] initialMemory;
+        private readonly int[] memory;
 
         private int instructionPointer;
         private Instruction currentInstruction;
@@ -15,13 +15,14 @@ namespace AdventOfCode
 
         public IntcodeInterpreter(string programString)
         {
-            initialMemory = programString;
+            initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
+            memory = new int[initialMemory.Length];
             ResetMemory();
         }
 
         public void ResetMemory()
         {
-            memory = initialMemory.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
+            initialMemory.CopyTo(memory, 0);
             numInstructionsExecuted = 0;
             instructionPointer = 0;
             currentInstruction = GetCurrentInstruction();
