@@ -9,7 +9,7 @@ namespace AdventOfCodeBenchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<Day02Benchmark>();
+            var summary = BenchmarkRunner.Run<Day03Benchmark>();
 
             //var result = Day02.Puzzle2(AdventOfCodeTests.Resources.Input.D02_Puzzle);
         }
