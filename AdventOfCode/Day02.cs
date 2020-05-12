@@ -11,7 +11,12 @@ namespace AdventOfCode
         // == == == == == Puzzle 1 == == == == ==
         public static string Puzzle1(string input)
         {
-            return input + "_Puzzle1";
+            var intcode = new IntcodeInterpreter(input);
+            intcode.SetValue(1, 12);
+            intcode.SetValue(2, 2);
+            intcode.ExecuteUntilHalt();
+
+            return intcode.GetValue(0).ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
