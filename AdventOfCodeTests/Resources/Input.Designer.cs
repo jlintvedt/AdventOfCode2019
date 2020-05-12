@@ -182,5 +182,14 @@ namespace AdventOfCodeTests.Resources {
                 return ResourceManager.GetString("D03_Puzzle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 124075-580769.
+        /// </summary>
+        public static string D04_Puzzle {
+            get {
+                return ResourceManager.GetString("D04_Puzzle", resourceCulture);
+            }
+        }
     }
 }
