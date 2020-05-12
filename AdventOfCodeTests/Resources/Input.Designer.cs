@@ -173,5 +173,14 @@ namespace AdventOfCodeTests.Resources {
                 return ResourceManager.GetString("D02_Puzzle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R991,U77,L916,D26,R424,D739,L558,D439,R636,U616,L364,D653,R546,U909,L66,D472,R341,U906,L37,D360,L369,D451,L649,D521,R2,U491,R409,U801,R23,U323,L209,U171,L849,D891,L854,U224,R476,D519,L937,U345,R722,D785,L312,D949,R124,U20,R677,D236,R820,D320,L549,D631,R42,U621,R760,U958,L925,U84,R914,U656,R598,D610,R397,D753,L109,U988,R435,U828,R219,U583,L317,D520,L940,D850,R594,D801,L422,U292,R883,U204,L76,U860,L753,U483,L183,U179,R441,U163,L859,U437,L485,D239,R454,D940,R689,D704,R110,D12,R370,D413,L192,D979,R990,D651,L308 [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string D03_Puzzle {
+            get {
+                return ResourceManager.GetString("D03_Puzzle", resourceCulture);
+            }
+        }
     }
 }
