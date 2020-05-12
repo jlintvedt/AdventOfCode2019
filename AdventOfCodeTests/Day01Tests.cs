@@ -6,8 +6,6 @@ namespace AdventOfCodeTests
     public class Day01Tests
     {
         private string input_puzzle;
-        private string input_example1;
-        private string input_example2;
 
         [TestInitialize]
         public void LoadInput()

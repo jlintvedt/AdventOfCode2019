@@ -12,17 +12,27 @@ namespace AdventOfCode
         public static string Puzzle1(string input)
         {
             var intcode = new IntcodeInterpreter(input);
-            intcode.SetValue(1, 12);
-            intcode.SetValue(2, 2);
-            intcode.ExecuteUntilHalt();
-
-            return intcode.GetValue(0).ToString();
+            return intcode.ExecuteProgram(12, 2).ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var intcode = new IntcodeInterpreter(input);
+
+            for (int noun = 0; noun < 100; noun++)
+            {
+                for (int verb = 0; verb < 100; verb++)
+                {
+                    if (intcode.ExecuteProgram(noun, verb) == 19690720)
+                    {
+                        return (100 * noun + verb).ToString();
+                    }
+                    intcode.ResetMemory();
+                }
+            }
+
+            throw new Exception("Could not find noun and verb that produced 19690720");
         }
     }
 }

@@ -37,7 +37,7 @@ namespace AdventOfCodeTests
             var result = AdventOfCode.Day02.Puzzle2(input_puzzle);
 
             // Assert
-            Assert.AreEqual($"{input_puzzle}_Puzzle2", result);
+            Assert.AreEqual("7621", result);
         }
     }
 }

@@ -5,100 +5,126 @@ namespace AdventOfCode
 {
     public class IntcodeInterpreter
     {
-        private readonly int[] program;
-        private int pos;
+        private readonly string initialMemory;
+        private int[] memory;
+
+        private int instructionPointer;
         private Instruction currentInstruction;
-        public int instructionsExecuted;
+
+        public int numInstructionsExecuted;
 
         public IntcodeInterpreter(string programString)
         {
-            program = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
+            initialMemory = programString;
+            ResetMemory();
+        }
+
+        public void ResetMemory()
+        {
+            memory = initialMemory.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
+            numInstructionsExecuted = 0;
+            instructionPointer = 0;
             currentInstruction = GetCurrentInstruction();
         }
 
         public string GenerateProgramString()
         {
-            return string.Join(",", program);
+            return string.Join(",", memory);
         }
 
-        public void SetValue(int pos, int value)
+        public void SetInput(int noun, int verb)
         {
-            program[pos] = value;
+            if (noun < 0 || noun > 99 || verb < 0 || verb > 99)
+            {
+                throw new ArgumentException($"Noun[{noun}] and verb[{verb}] must be [0,99]");
+            }
+
+            SetParamater(1, noun);
+            SetParamater(2, verb);
         }
 
-        public int GetValue(int pos)
+        public int ExecuteProgram(int noun, int verb, int maxInstructions = 1000)
         {
-            return program[pos];
-        }
+            SetInput(noun, verb);
 
-        public void ExecuteUntilHalt()
-        {
             while (currentInstruction != Instruction.Halt)
             {
-                switch (currentInstruction)
+                if (currentInstruction == Instruction.Unknown)
                 {
-                    case Instruction.Add:
-                    case Instruction.Multiply:
-                        ExecuteInstruction();
-                        break;
-                    case Instruction.Halt:
-                    case Instruction.Unknown:
-                    default:
-                        throw new Exception($"Invalid instruction in execution-loop [{currentInstruction}-{program[pos]}   pos:{pos}]");
+                    throw new Exception($"Unknown instruction [{currentInstruction}:{memory[instructionPointer]}   pos:{instructionPointer}]");
                 }
+                else if (numInstructionsExecuted > maxInstructions)
+                {
+                    throw new Exception($"Max instructions [{maxInstructions}] reached. Aborting");
+                }
+                ExecuteInstruction();
             }
+
+            return GetParameter(0);
         }
 
         public void ExecuteInstruction()
         {
-            var pos1 = program[pos + 1];
-            var pos2 = program[pos + 2];
-            var pos3 = program[pos + 3];
+            var p1 = memory[instructionPointer + 1];
+            var p2 = memory[instructionPointer + 2];
+            var p3 = memory[instructionPointer + 3];
 
             if (currentInstruction == Instruction.Add)
             {
-                PerformInstructionAdd(pos1, pos2, pos3);
+                PerformInstructionAdd(p1, p2, p3);
             }
             else if (currentInstruction == Instruction.Multiply)
             {
-                PerformInstructionMultiply(pos1, pos2, pos3);
+                PerformInstructionMultiply(p1, p2, p3);
             }
             else
             {
-                throw new Exception($"Cannot execute on instruction [{currentInstruction}-{program[pos]}   pos:{pos}]");
+                throw new Exception($"Cannot execute on instruction [{currentInstruction}-{memory[instructionPointer]}   pos:{instructionPointer}]");
             }
-            MovePosition(4);
-            instructionsExecuted++;
+
+            numInstructionsExecuted++;
+        }
+
+        private void SetParamater(int address, int parameter)
+        {
+            memory[address] = parameter;
+        }
+
+        private int GetParameter(int address)
+        {
+            return memory[address];
         }
 
         private void MovePosition(int spaces)
         {
-            pos += spaces;
+            instructionPointer += spaces;
             currentInstruction = GetCurrentInstruction();
         }
 
 
-        private void PerformInstructionAdd(int inPos1, int inPos2, int outPos)
+        private void PerformInstructionAdd(int param1, int param2, int param3)
         {
-            program[outPos] = program[inPos1] + program[inPos2];
+            memory[param3] = memory[param1] + memory[param2];
+            MovePosition(4);
         }
 
-        private void PerformInstructionMultiply(int inPos1, int inPos2, int outPos)
+        private void PerformInstructionMultiply(int param1, int param2, int param3)
         {
-            program[outPos] = program[inPos1] * program[inPos2];
+            memory[param3] = memory[param1] * memory[param2];
+            MovePosition(4);
         }
 
         private Instruction GetCurrentInstruction()
         {
-            if (program[pos] == 1)
+            if (memory[instructionPointer] == 1)
             {
                 return Instruction.Add;
             }
-            if (program[pos] == 2)
+            if (memory[instructionPointer] == 2)
             {
                 return Instruction.Multiply;
             }
-            if (program[pos] == 99)
+            if (memory[instructionPointer] == 99)
             {
                 return Instruction.Halt;
             }

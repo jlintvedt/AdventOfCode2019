@@ -1,8 +1,5 @@
 ﻿using AdventOfCode;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AdventOfCodeTests
 {
@@ -23,17 +20,17 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
-        public void SetValue_ShouldUpdateProgram()
+        public void SetInput_ShouldUpdateProgram()
         {
             // Arrange
             var program = "1,0,0,0,99";
             var intcode = new IntcodeInterpreter(program);
 
             // Act
-            intcode.SetValue(2, 55);
+            intcode.SetInput(22, 33);
 
             // Assert
-            Assert.AreEqual("1,0,55,0,99", intcode.GenerateProgramString());
+            Assert.AreEqual("1,22,33,0,99", intcode.GenerateProgramString());
         }
 
         [TestMethod]
@@ -105,7 +102,7 @@ namespace AdventOfCodeTests
             var intcode = new IntcodeInterpreter(program);
 
             // Act
-            intcode.ExecuteUntilHalt();
+            intcode.ExecuteProgram(9, 10);
 
             // Assert
             Assert.AreEqual(result, intcode.GenerateProgramString());
