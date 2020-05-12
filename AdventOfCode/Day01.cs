@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace AdventOfCode
@@ -37,6 +37,20 @@ namespace AdventOfCode
             foreach (var mass in masses)
             {
                 totalFuel += CalculateFuelRequired(mass);
+            }
+
+            return totalFuel.ToString();
+        }
+
+        // == == == == == Puzzle 2 == == == == ==
+        public static string Puzzle2(string input)
+        {
+            var masses = Common.Common.ParseStringToIntArray(input, delim: Environment.NewLine);
+            var totalFuel = 0;
+
+            foreach (var mass in masses)
+            {
+                totalFuel += CalculateFuelsFuelRequired(mass);
             }
 
             return totalFuel.ToString();

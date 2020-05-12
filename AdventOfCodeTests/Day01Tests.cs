@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AdventOfCodeTests
 {
@@ -54,6 +54,35 @@ namespace AdventOfCodeTests
             mass = "100756";
             fuel = "33583";
             Assert.AreEqual(fuel, AdventOfCode.Day01.Puzzle1(mass));
+        }
+
+        [TestMethod]
+        public void Puzzle2()
+        {
+            // Act
+            var result = AdventOfCode.Day01.Puzzle2(input_puzzle);
+
+            // Assert
+            Assert.AreEqual("4988257", result);
+        }
+
+        [TestMethod]
+        public void Puzzle2_Example1()
+        {
+            // Example 1
+            var mass = "14";
+            var fuel = "2";
+            Assert.AreEqual(fuel, AdventOfCode.Day01.Puzzle2(mass));
+
+            // Example 2
+            mass = "1969";
+            fuel = "966";
+            Assert.AreEqual(fuel, AdventOfCode.Day01.Puzzle2(mass));
+
+            // Example 3
+            mass = "100756";
+            fuel = "50346";
+            Assert.AreEqual(fuel, AdventOfCode.Day01.Puzzle2(mass));
         }
     }
 }
