@@ -117,15 +117,17 @@ namespace AdventOfCode
 
         private Instruction GetCurrentInstruction()
         {
-            if (memory[instructionPointer] == 1)
+            var current = memory[instructionPointer];
+
+            if (current == 1)
             {
                 return Instruction.Add;
             }
-            if (memory[instructionPointer] == 2)
+            if (current == 2)
             {
                 return Instruction.Multiply;
             }
-            if (memory[instructionPointer] == 99)
+            if (current == 99)
             {
                 return Instruction.Halt;
             }
