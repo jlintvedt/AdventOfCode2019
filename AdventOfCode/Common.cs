@@ -30,6 +30,19 @@ namespace AdventOfCode.Common
             return output;
         }
 
+        public static string[][] ParseStringToJaggedStringArray(string input, string rowDelim = null, string columnDelim = null)
+        {
+            var rawRows = input.Split(rowDelim);
+            var output = new string[rawRows.Length][];
+
+            for (int i = 0; i < rawRows.Length; i++)
+            {
+                output[i] = rawRows[i].Split(new[] { columnDelim }, StringSplitOptions.None);
+            }
+
+            return output;
+        }
+
         // == == == == == Parsing == == == == ==
         static Dictionary<char, int[]> HexCharacterToBinary = new Dictionary<char, int[]> {
             { '0', new int[]{0,0,0,0} },

@@ -94,6 +94,28 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
+        public void ParseStringToJaggedStringArray_NewlineAndCommaDelim()
+        {
+            // Arrange
+            var input = string.Format("1{1}2{1}3{0}4{1}5{1}6{0}7{1}8{1}9", Environment.NewLine, ",");
+            var expected = new string[][]
+            {
+                new string[] { "1", "2", "3" },
+                new string[] { "4", "5", "6" },
+                new string[] { "7", "8", "9" }
+            };
+
+            // Act
+            var output = Common.ParseStringToJaggedStringArray(input, Environment.NewLine, ",");
+
+            // Assert
+            for (int i = 0; i < expected.Length; i++)
+            {
+                CollectionAssert.AreEqual(expected[i], output[i]);
+            }
+        }
+
+        [TestMethod]
         public void ConvertHexStringToBitArray_ValidInput()
         {
             // Arrange
