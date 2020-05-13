@@ -77,33 +77,36 @@ namespace AdventOfCode.Intcode
 
         public void ExecuteInstruction()
         {
-            if (instruction.Operation == Operation.Add)
+            switch (instruction.Operation)
             {
-                var p1 = memory[instructionPointer + 1];
-                var p2 = memory[instructionPointer + 2];
-                var p3 = memory[instructionPointer + 3];
-                PerformInstructionAdd(p1, p2, p3);
-            }
-            else if (instruction.Operation == Operation.Multiply)
-            {
-                var p1 = memory[instructionPointer + 1];
-                var p2 = memory[instructionPointer + 2];
-                var p3 = memory[instructionPointer + 3];
-                PerformInstructionMultiply(p1, p2, p3);
-            }
-            else if (instruction.Operation == Operation.Input)
-            {
-                var p1 = memory[instructionPointer + 1];
-                PerformInstructionInput(p1);
-            }
-            else if (instruction.Operation == Operation.Output)
-            {
-                var p1 = memory[instructionPointer + 1];
-                PerformInstructionOutput(p1);
-            }
-            else
-            {
-                throw new Exception($"Cannot execute on instruction [{instruction.Operation}-{memory[instructionPointer]}   pos:{instructionPointer}]");
+                case Operation.Add:
+                    PerformInstructionAdd();
+                    break;
+                case Operation.Multiply:
+                    PerformInstructionMultiply();
+                    break;
+                case Operation.Input:
+                    PerformInstructionInput();
+                    break;
+                case Operation.Output:
+                    PerformInstructionOutput();
+                    break;
+                case Operation.JumpIfTrue:
+                    PerformInstructionJumpIfTrue();
+                    break;
+                case Operation.JumpIfFalse:
+                    PerformInstructionJumpIfFalse();
+                    break;
+                case Operation.LessThan:
+                    PerformInstructionLessThan();
+                    break;
+                case Operation.Equals:
+                    PerformInstructionEquals();
+                    break;
+                case Operation.Halt:
+                case Operation.Unknown:
+                default:
+                    throw new Exception($"Cannot execute on instruction [{instruction.Operation}-{memory[instructionPointer]}   pos:{instructionPointer}]");
             }
 
             numInstructionsExecuted++;
@@ -125,33 +128,127 @@ namespace AdventOfCode.Intcode
             instruction = GetCurrentInstruction();
         }
 
-        private void PerformInstructionAdd(int param1, int param2, int param3)
+        private void PerformInstructionAdd()
         {
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
             var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
             memory[param3] = value1 + value2;
             MovePosition(4);
         }
 
-        private void PerformInstructionMultiply(int param1, int param2, int param3)
+        private void PerformInstructionMultiply()
         {
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
             var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
             memory[param3] = value1 * value2;
             MovePosition(4);
         }
 
-        private void PerformInstructionInput(int param1)
+        private void PerformInstructionInput()
         {
+            // Params
+            var param1 = memory[instructionPointer + 1];
+
+            // Execute
             memory[param1] = In;
             MovePosition(2);
         }
 
-        private void PerformInstructionOutput(int param1)
+        private void PerformInstructionOutput()
         {
+            // Params
+            var param1 = memory[instructionPointer + 1];
+
+            // Values
             var value = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            
+            // Execute
             OutBuffer.Enqueue(value);
             MovePosition(2);
+        }
+
+        private void PerformInstructionJumpIfTrue()
+        {
+            throw new NotImplementedException();
+
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
+            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
+            MovePosition(4);
+        }
+
+        private void PerformInstructionJumpIfFalse()
+        {
+            throw new NotImplementedException();
+
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
+            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
+            MovePosition(4);
+        }
+
+        private void PerformInstructionLessThan()
+        {
+            throw new NotImplementedException();
+
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
+            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
+            MovePosition(4);
+        }
+
+        private void PerformInstructionEquals()
+        {
+            throw new NotImplementedException();
+
+            // Params
+            var param1 = memory[instructionPointer + 1];
+            var param2 = memory[instructionPointer + 2];
+            var param3 = memory[instructionPointer + 3];
+
+            // Values
+            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+
+            // Execute
+            MovePosition(4);
         }
 
         private Instruction GetCurrentInstruction()
@@ -176,21 +273,41 @@ namespace AdventOfCode.Intcode
     {
         public static readonly Dictionary<int, Instruction> KnownInstructions = new Dictionary<int, Instruction>
         {
-            // Add
+            // Add [1]
             { 0001, new Instruction(Operation.Add, new Mode[2]{Mode.Position, Mode.Position } ) },
             { 0101, new Instruction(Operation.Add, new Mode[2]{Mode.Immediate, Mode.Position } ) },
             { 1001, new Instruction(Operation.Add, new Mode[2]{Mode.Position, Mode.Immediate } ) },
             { 1101, new Instruction(Operation.Add, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
-            // Multiply
+            // Multiply [2]
             { 0002, new Instruction(Operation.Multiply, new Mode[2]{Mode.Position, Mode.Position } ) },
             { 0102, new Instruction(Operation.Multiply, new Mode[2]{Mode.Immediate, Mode.Position } ) },
             { 1002, new Instruction(Operation.Multiply, new Mode[2]{Mode.Position, Mode.Immediate } ) },
             { 1102, new Instruction(Operation.Multiply, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
-            // Input
+            // Input [3]
             { 3, new Instruction(Operation.Input, null) },
-            //Output
+            //Output [4]
             { 004, new Instruction(Operation.Output, new Mode[1]{Mode.Position}) },
             { 104, new Instruction(Operation.Output, new Mode[1]{Mode.Immediate}) },
+            // Jump-if-true [5]
+            { 0005, new Instruction(Operation.JumpIfTrue, new Mode[2]{Mode.Position, Mode.Position } ) },
+            { 0105, new Instruction(Operation.JumpIfTrue, new Mode[2]{Mode.Immediate, Mode.Position } ) },
+            { 1005, new Instruction(Operation.JumpIfTrue, new Mode[2]{Mode.Position, Mode.Immediate } ) },
+            { 1105, new Instruction(Operation.JumpIfTrue, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
+            // Jump-if-false [6]
+            { 0006, new Instruction(Operation.JumpIfFalse, new Mode[2]{Mode.Position, Mode.Position } ) },
+            { 0106, new Instruction(Operation.JumpIfFalse, new Mode[2]{Mode.Immediate, Mode.Position } ) },
+            { 1006, new Instruction(Operation.JumpIfFalse, new Mode[2]{Mode.Position, Mode.Immediate } ) },
+            { 1106, new Instruction(Operation.JumpIfFalse, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
+            // Less than [7]
+            { 0007, new Instruction(Operation.LessThan, new Mode[2]{Mode.Position, Mode.Position } ) },
+            { 0107, new Instruction(Operation.LessThan, new Mode[2]{Mode.Immediate, Mode.Position } ) },
+            { 1007, new Instruction(Operation.LessThan, new Mode[2]{Mode.Position, Mode.Immediate } ) },
+            { 1107, new Instruction(Operation.LessThan, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
+            // Equals [8]
+            { 0008, new Instruction(Operation.Equals, new Mode[2]{Mode.Position, Mode.Position } ) },
+            { 0108, new Instruction(Operation.Equals, new Mode[2]{Mode.Immediate, Mode.Position } ) },
+            { 1008, new Instruction(Operation.Equals, new Mode[2]{Mode.Position, Mode.Immediate } ) },
+            { 1108, new Instruction(Operation.Equals, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
             // Halt
             { 99, new Instruction(Operation.Halt, null) },
         };
@@ -216,40 +333,37 @@ namespace AdventOfCode.Intcode
             int opcode = rawInstruction % 100;
             int modesraw = (rawInstruction - opcode) / 100;
 
-            if (opcode == 1)
+            switch (opcode)
             {
-                var modes = new Mode[2];
-                GetModes(modesraw, 2, ref modes);
-                return new Instruction(Operation.Add, modes);
+                case 1:
+                    return new Instruction(Operation.Add, GetModes(modesraw, 2));
+                case 2:
+                    return new Instruction(Operation.Multiply, GetModes(modesraw, 2));
+                case 3:
+                    return new Instruction(Operation.Input, null);
+                case 4:
+                    return new Instruction(Operation.Output, GetModes(modesraw, 1));
+                case 5:
+                    return new Instruction(Operation.JumpIfTrue, GetModes(modesraw, 2));
+                case 6:
+                    return new Instruction(Operation.JumpIfFalse, GetModes(modesraw, 2));
+                case 7:
+                    return new Instruction(Operation.LessThan, GetModes(modesraw, 2));
+                case 8:
+                    return new Instruction(Operation.Equals, GetModes(modesraw, 2));
+                case 99:
+                    return new Instruction(Operation.Halt, null);
+                default:
+                    return new Instruction(Operation.Unknown, null);
             }
-            if (opcode == 2)
-            {
-                var modes = new Mode[2];
-                GetModes(modesraw, 2, ref modes);
-                return new Instruction(Operation.Multiply, modes);
-            }
-            if (opcode == 3)
-            {
-                return new Instruction(Operation.Input, null);
-            }
-            if (opcode == 4)
-            {
-                var modes = new Mode[1];
-                GetModes(modesraw, 1, ref modes);
-                return new Instruction(Operation.Output, modes);
-            }
-            if (opcode == 99)
-            {
-                return new Instruction(Operation.Halt, null);
-            }
-            return new Instruction(Operation.Unknown, null);
         }
 
-        public  static void GetModes(int raw, int numModes, ref Mode[] modes)
+        public static Mode[] GetModes(int raw, int numModes)
         {
+            var modes = new Mode[numModes];
             if (raw == 0)
             {
-                return;
+                return modes;
             }
 
             if (KnownModes.TryGetValue(raw, out Mode[] m))
@@ -260,6 +374,7 @@ namespace AdventOfCode.Intcode
             {
                 ParseModes(raw, numModes, ref modes);
             }
+            return modes;
         }
 
         public static void ParseModes(int raw, int numModes, ref Mode[] modes)
@@ -292,6 +407,10 @@ namespace AdventOfCode.Intcode
         Multiply,
         Input,
         Output,
+        JumpIfTrue,
+        JumpIfFalse,
+        LessThan,
+        Equals,
         Halt,
         Unknown,
     }
