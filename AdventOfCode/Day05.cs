@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace AdventOfCode
 {
@@ -11,7 +12,11 @@ namespace AdventOfCode
         // == == == == == Puzzle 1 == == == == ==
         public static string Puzzle1(string input)
         {
-            return input + "_Puzzle1";
+            var intcode = new Intcode.Interpreter(input);
+            intcode.In = 1;
+            intcode.ExecuteProgram();
+
+            return intcode.OutBuffer.Last().ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==

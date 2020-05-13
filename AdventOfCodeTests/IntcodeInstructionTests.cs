@@ -76,7 +76,7 @@ namespace AdventOfCodeTests
                 var known = InstructionParser.GetInstruction(inst);
                 var parsed = InstructionParser.ParseInstruction(inst);
                 Assert.AreEqual(known.Operation, parsed.Operation);
-                CollectionAssert.AreEqual(known.Mode, parsed.Mode);
+                CollectionAssert.AreEqual(known.Mode, parsed.Mode, $"Missmatch for instruction [{inst}]");
             }
         }
     }

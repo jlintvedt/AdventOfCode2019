@@ -12,7 +12,7 @@ namespace AdventOfCode
         public static string Puzzle1(string input)
         {
             var intcode = new Intcode.Interpreter(input);
-            return intcode.ExecuteProgram(12, 2).ToString();
+            return intcode.ExecuteProgram_NounVerb(12, 2).ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
@@ -24,7 +24,7 @@ namespace AdventOfCode
             {
                 for (int verb = 0; verb < 100; verb++)
                 {
-                    if (intcode.ExecuteProgram(noun, verb) == 19690720)
+                    if (intcode.ExecuteProgram_NounVerb(noun, verb) == 19690720)
                     {
                         return (100 * noun + verb).ToString();
                     }

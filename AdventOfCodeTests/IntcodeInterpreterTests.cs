@@ -71,6 +71,21 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
+        public void ExecuteInstruction_Add_ImmediateMode_NegativeNumber()
+        {
+            // Arrange
+            var program = "1101,100,-1,4,0";
+            var result = "1101,100,-1,4,99";
+            var intcode = new Intcode.Interpreter(program);
+
+            // Act
+            intcode.ExecuteInstruction();
+
+            // Assert
+            Assert.AreEqual(result, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
         public void ExecuteInstruction_Multiply()
         {
             // Arrange
@@ -131,7 +146,26 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
-        public void ExecuteProgram_AddMultiply()
+        public void ExecuteInstruction_InputThenOutput()
+        {
+            // Arrange
+            var program = "3,0,4,0,99";
+            var intcode = new Intcode.Interpreter(program);
+            var input = 13;
+
+            // Act & Assert
+            intcode.In = input;
+            intcode.ExecuteInstruction();
+            Assert.AreEqual("13,0,4,0,99", intcode.GenerateProgramString());
+
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(1, intcode.OutBuffer.Count);
+            var output = intcode.OutBuffer.Dequeue();
+            Assert.AreEqual(input, output);
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_NoudVerb_AddMultiply()
         {
             // Arrange
             var program = "1,9,10,3,2,3,11,0,99,30,40,50";
@@ -139,7 +173,7 @@ namespace AdventOfCodeTests
             var intcode = new Intcode.Interpreter(program);
 
             // Act
-            intcode.ExecuteProgram(9, 10);
+            intcode.ExecuteProgram_NounVerb(9, 10);
 
             // Assert
             Assert.AreEqual(result, intcode.GenerateProgramString());

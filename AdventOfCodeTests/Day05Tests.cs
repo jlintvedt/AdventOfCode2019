@@ -27,7 +27,7 @@ namespace AdventOfCodeTests
             var result = AdventOfCode.Day05.Puzzle1(input_puzzle);
 
             // Assert
-            Assert.AreEqual($"{input_puzzle}_Puzzle1", result);
+            Assert.AreEqual("15426686", result);
         }
 
         [TestMethod]

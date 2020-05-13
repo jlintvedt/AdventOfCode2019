@@ -14,11 +14,16 @@ namespace AdventOfCode.Intcode
 
         public int numInstructionsExecuted;
 
+        public int In { get; set; }
+        public Queue<int> OutBuffer { get; private set; }
+
         public Interpreter(string programString)
         {
             initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
             memory = new int[initialMemory.Length];
             ResetMemory();
+
+            OutBuffer = new Queue<int>();
         }
 
         public void ResetMemory()
@@ -45,10 +50,8 @@ namespace AdventOfCode.Intcode
             SetParamater(2, verb);
         }
 
-        public int ExecuteProgram(int noun, int verb, int maxInstructions = 1000)
+        public void ExecuteProgram(int maxInstructions = 1000)
         {
-            SetInput(noun, verb);
-
             while (instruction.Operation != Operation.Halt)
             {
                 if (instruction.Operation == Operation.Unknown)
@@ -61,23 +64,42 @@ namespace AdventOfCode.Intcode
                 }
                 ExecuteInstruction();
             }
+        }
+
+        public int ExecuteProgram_NounVerb(int noun, int verb, int maxInstructions = 1000)
+        {
+            SetInput(noun, verb);
+
+            ExecuteProgram(maxInstructions);
 
             return GetParameter(0);
         }
 
         public void ExecuteInstruction()
         {
-            var p1 = memory[instructionPointer + 1];
-            var p2 = memory[instructionPointer + 2];
-            var p3 = memory[instructionPointer + 3];
-
             if (instruction.Operation == Operation.Add)
             {
+                var p1 = memory[instructionPointer + 1];
+                var p2 = memory[instructionPointer + 2];
+                var p3 = memory[instructionPointer + 3];
                 PerformInstructionAdd(p1, p2, p3);
             }
             else if (instruction.Operation == Operation.Multiply)
             {
+                var p1 = memory[instructionPointer + 1];
+                var p2 = memory[instructionPointer + 2];
+                var p3 = memory[instructionPointer + 3];
                 PerformInstructionMultiply(p1, p2, p3);
+            }
+            else if (instruction.Operation == Operation.Input)
+            {
+                var p1 = memory[instructionPointer + 1];
+                PerformInstructionInput(p1);
+            }
+            else if (instruction.Operation == Operation.Output)
+            {
+                var p1 = memory[instructionPointer + 1];
+                PerformInstructionOutput(p1);
             }
             else
             {
@@ -119,6 +141,19 @@ namespace AdventOfCode.Intcode
             MovePosition(4);
         }
 
+        private void PerformInstructionInput(int param1)
+        {
+            memory[param1] = In;
+            MovePosition(2);
+        }
+
+        private void PerformInstructionOutput(int param1)
+        {
+            var value = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            OutBuffer.Enqueue(value);
+            MovePosition(2);
+        }
+
         private Instruction GetCurrentInstruction()
         {
             return InstructionParser.GetInstruction(memory[instructionPointer]);
@@ -151,6 +186,13 @@ namespace AdventOfCode.Intcode
             { 0102, new Instruction(Operation.Multiply, new Mode[2]{Mode.Immediate, Mode.Position } ) },
             { 1002, new Instruction(Operation.Multiply, new Mode[2]{Mode.Position, Mode.Immediate } ) },
             { 1102, new Instruction(Operation.Multiply, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
+            // Input
+            { 3, new Instruction(Operation.Input, null) },
+            //Output
+            { 004, new Instruction(Operation.Output, new Mode[1]{Mode.Position}) },
+            { 104, new Instruction(Operation.Output, new Mode[1]{Mode.Immediate}) },
+            // Halt
+            { 99, new Instruction(Operation.Halt, null) },
         };
 
         public static readonly Dictionary<int, Mode[]> KnownModes = new Dictionary<int, Mode[]>
@@ -173,17 +215,28 @@ namespace AdventOfCode.Intcode
         {
             int opcode = rawInstruction % 100;
             int modesraw = (rawInstruction - opcode) / 100;
-            var modes = new Mode[2];
 
             if (opcode == 1)
             {
+                var modes = new Mode[2];
                 GetModes(modesraw, 2, ref modes);
                 return new Instruction(Operation.Add, modes);
             }
             if (opcode == 2)
             {
+                var modes = new Mode[2];
                 GetModes(modesraw, 2, ref modes);
                 return new Instruction(Operation.Multiply, modes);
+            }
+            if (opcode == 3)
+            {
+                return new Instruction(Operation.Input, null);
+            }
+            if (opcode == 4)
+            {
+                var modes = new Mode[1];
+                GetModes(modesraw, 1, ref modes);
+                return new Instruction(Operation.Output, modes);
             }
             if (opcode == 99)
             {
@@ -237,6 +290,8 @@ namespace AdventOfCode.Intcode
     {
         Add,
         Multiply,
+        Input,
+        Output,
         Halt,
         Unknown,
     }

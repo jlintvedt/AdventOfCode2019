@@ -11,3 +11,4 @@
 | Day03 | Puzzle2 |         29ms |      22ms |
 | Day04 | Puzzle1 |          1ms |           |
 | Day04 | Puzzle2 |         <1ms |           |
+| Day05 | Puzzle1 |          5ms |           |
