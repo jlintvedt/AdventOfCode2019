@@ -11,14 +11,14 @@ namespace AdventOfCode
         // == == == == == Puzzle 1 == == == == ==
         public static string Puzzle1(string input)
         {
-            var intcode = new IntcodeInterpreter(input);
+            var intcode = new Intcode.Interpreter(input);
             return intcode.ExecuteProgram(12, 2).ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            var intcode = new IntcodeInterpreter(input);
+            var intcode = new Intcode.Interpreter(input);
 
             for (int noun = 0; noun < 100; noun++)
             {

@@ -5,8 +5,8 @@
 |-------|---------|-------------:|----------:|
 | Day01 | Puzzle1 |         <1ms |      12µs |
 | Day01 | Puzzle2 |         <1ms |      13µs |
-| Day02 | Puzzle1 |          4ms |           |
-| Day02 | Puzzle2 |         42ms |           |
+| Day02 | Puzzle1 |          6ms |           |
+| Day02 | Puzzle2 |         29ms |           |
 | Day03 | Puzzle1 |         39ms |      20ms |
 | Day03 | Puzzle2 |         29ms |      22ms |
 | Day04 | Puzzle1 |          1ms |           |
