@@ -6,6 +6,7 @@ using Intcode = AdventOfCode.Intcode;
 using Mode = AdventOfCode.Intcode.Mode;
 using Operation = AdventOfCode.Intcode.Operation;
 using Instruction = AdventOfCode.Intcode.Instruction;
+using InstructionParser = AdventOfCode.Intcode.InstructionParser;
 
 
 namespace AdventOfCodeTests
@@ -23,19 +24,19 @@ namespace AdventOfCodeTests
             var addImmediateImmediate = 1101;
 
             // Act & Assert
-            var instruction = Intcode.InstructionParser.ParseInstruction(addPositionPosition);
+            var instruction = InstructionParser.ParseInstruction(addPositionPosition);
             Assert.AreEqual(Operation.Add, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Position }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(addImmediatePosition);
+            instruction = InstructionParser.ParseInstruction(addImmediatePosition);
             Assert.AreEqual(Operation.Add, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Position }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(addPositionImmediate);
+            instruction = InstructionParser.ParseInstruction(addPositionImmediate);
             Assert.AreEqual(Operation.Add, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Immediate }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(addImmediateImmediate);
+            instruction = InstructionParser.ParseInstruction(addImmediateImmediate);
             Assert.AreEqual(Operation.Add, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Immediate }, instruction.Mode);
         }
@@ -50,21 +51,33 @@ namespace AdventOfCodeTests
             var multiplyImmediateImmediate = 1102;
 
             // Act & Assert
-            var instruction = Intcode.InstructionParser.ParseInstruction(multiplyPositionPosition);
+            var instruction = InstructionParser.ParseInstruction(multiplyPositionPosition);
             Assert.AreEqual(Operation.Multiply, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Position }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(multiplyImmediatePosition);
+            instruction = InstructionParser.ParseInstruction(multiplyImmediatePosition);
             Assert.AreEqual(Operation.Multiply, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Position }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(multiplyPositionImmediate);
+            instruction = InstructionParser.ParseInstruction(multiplyPositionImmediate);
             Assert.AreEqual(Operation.Multiply, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Immediate }, instruction.Mode);
 
-            instruction = Intcode.InstructionParser.ParseInstruction(multiplyImmediateImmediate);
+            instruction = InstructionParser.ParseInstruction(multiplyImmediateImmediate);
             Assert.AreEqual(Operation.Multiply, instruction.Operation);
             CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Immediate }, instruction.Mode);
+        }
+
+        [TestMethod]
+        public void GetInstruction_ShouldMatchParseInstruction()
+        {
+            foreach (var inst in InstructionParser.KnownInstructions.Keys)
+            {
+                var known = InstructionParser.GetInstruction(inst);
+                var parsed = InstructionParser.ParseInstruction(inst);
+                Assert.AreEqual(known.Operation, parsed.Operation);
+                CollectionAssert.AreEqual(known.Mode, parsed.Mode);
+            }
         }
     }
 }

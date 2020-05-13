@@ -139,7 +139,7 @@ namespace AdventOfCode.Intcode
 
     public static class InstructionParser
     {
-        private static readonly Dictionary<int, Instruction> KnownInstructions = new Dictionary<int, Instruction>
+        public static readonly Dictionary<int, Instruction> KnownInstructions = new Dictionary<int, Instruction>
         {
             // Add
             { 0001, new Instruction(Operation.Add, new Mode[2]{Mode.Position, Mode.Position } ) },
@@ -153,7 +153,7 @@ namespace AdventOfCode.Intcode
             { 1102, new Instruction(Operation.Multiply, new Mode[2]{Mode.Immediate, Mode.Immediate } ) },
         };
 
-        private static readonly Dictionary<int, Mode[]> KnownModes = new Dictionary<int, Mode[]>
+        public static readonly Dictionary<int, Mode[]> KnownModes = new Dictionary<int, Mode[]>
         {
             { 1, new Mode[1] { Mode.Immediate } },
             { 10, new Mode[2] { Mode.Position, Mode.Immediate } },
@@ -192,7 +192,7 @@ namespace AdventOfCode.Intcode
             return new Instruction(Operation.Unknown, null);
         }
 
-        private static void GetModes(int raw, int numModes, ref Mode[] modes)
+        public  static void GetModes(int raw, int numModes, ref Mode[] modes)
         {
             if (raw == 0)
             {
@@ -209,7 +209,7 @@ namespace AdventOfCode.Intcode
             }
         }
 
-        private static void ParseModes(int raw, int numModes, ref Mode[] modes)
+        public static void ParseModes(int raw, int numModes, ref Mode[] modes)
         {
             for (int i = 0; i < numModes; i++)
             {

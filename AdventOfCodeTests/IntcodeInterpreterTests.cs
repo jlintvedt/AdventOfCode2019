@@ -56,6 +56,21 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
+        public void ExecuteInstruction_Add_ImmediateMode()
+        {
+            // Arrange
+            var program = "1001,4,3,4,33";
+            var result = "1001,4,3,4,36";
+            var intcode = new Intcode.Interpreter(program);
+
+            // Act
+            intcode.ExecuteInstruction();
+
+            // Assert
+            Assert.AreEqual(result, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
         public void ExecuteInstruction_Multiply()
         {
             // Arrange
@@ -76,6 +91,21 @@ namespace AdventOfCodeTests
             // Arrange
             var program = "2,4,4,5,99,0";
             var result = "2,4,4,5,99,9801";
+            var intcode = new Intcode.Interpreter(program);
+
+            // Act
+            intcode.ExecuteInstruction();
+
+            // Assert
+            Assert.AreEqual(result, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ExecuteInstruction_Multiply_ImmediateMode()
+        {
+            // Arrange
+            var program = "1002,4,3,4,33";
+            var result = "1002,4,3,4,99";
             var intcode = new Intcode.Interpreter(program);
 
             // Act
