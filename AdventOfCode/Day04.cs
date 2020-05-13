@@ -21,25 +21,6 @@ namespace AdventOfCode
                 current = Common.Common.IntToTokenizedArray(lowest);
             }
 
-            public int FindNumberOfPasswordsInRange()
-            {
-                int numValidPasswords = 0;
-
-                SetLowestNonDecreasing(ref current);
-
-                if (CurentHasAdjecentIdentical())
-                {
-                    numValidPasswords++;
-                }
-
-                while (FindNextValidPassword() <= highest)
-                {
-                    numValidPasswords++;
-                }
-
-                return numValidPasswords;
-            }
-
             public static void SetLowestNonDecreasing(ref int[] array)
             {
                 int? replace = null;
@@ -59,14 +40,60 @@ namespace AdventOfCode
                 }
             }
 
-            public int FindNextValidPassword()
+            public int FindNumberOfPasswordsIncludingGroups()
             {
-                do
-                {
-                    IncreaseCurrent();
-                } while (!CurentHasAdjecentIdentical());
+                int numValidPasswords = 0;
 
-                return Common.Common.IntArrayToInt(current);
+                SetLowestNonDecreasing(ref current);
+
+                if (ArrayHasIdenticalNeighbours())
+                {
+                    numValidPasswords++;
+                }
+
+                while (FindNextValidPassword() <= highest)
+                {
+                    numValidPasswords++;
+                }
+
+                return numValidPasswords;
+
+                int FindNextValidPassword()
+                {
+                    do{
+                        IncreaseCurrent();
+                    } while (!ArrayHasIdenticalNeighbours());
+
+                    return Common.Common.IntArrayToInt(current);
+                }
+            }
+
+            public int FindNumberOfPasswordsExcludingGroups()
+            {
+                int numValidPasswords = 0;
+
+                SetLowestNonDecreasing(ref current);
+
+                if (ArrayHasIdenticalNeighboursExcludingGroups(ref current))
+                {
+                    numValidPasswords++;
+                }
+
+                while (FindNextValidPassword() <= highest)
+                {
+                    numValidPasswords++;
+                }
+
+                return numValidPasswords;
+
+                int FindNextValidPassword()
+                {
+                    do{
+                        IncreaseCurrent();
+                    } while (!ArrayHasIdenticalNeighboursExcludingGroups(ref current));
+
+                    return Common.Common.IntArrayToInt(current);
+                }
             }
 
             public void IncreaseCurrent()
@@ -93,7 +120,7 @@ namespace AdventOfCode
                 }
             }
 
-            public bool CurentHasAdjecentIdentical()
+            public bool ArrayHasIdenticalNeighbours()
             {
                 for (int i = 0; i < current.Length-1; i++)
                 {
@@ -106,6 +133,26 @@ namespace AdventOfCode
                 return false;
             }
 
+            public static bool ArrayHasIdenticalNeighboursExcludingGroups(ref int[] array)
+            {
+                for (int i = 0; i < array.Length-1; i++)
+                {
+                    if (array[i] == array[i+1])
+                    {
+                        if (i != 0 && array[i-1] == array[i])
+                        {
+                            continue;
+                        }
+                        if (i != (array.Length - 2) && array[i] == array[i + 2])
+                        {
+                            continue;
+                        }
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
 
         // == == == == == Puzzle 1 == == == == ==
@@ -115,13 +162,17 @@ namespace AdventOfCode
             var low = Convert.ToInt32(inputs[0]);
             var high = Convert.ToInt32(inputs[1]);
             var pf = new PasswordFinder(low, high);
-            return pf.FindNumberOfPasswordsInRange().ToString();
+            return pf.FindNumberOfPasswordsIncludingGroups().ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var inputs = input.Split("-");
+            var low = Convert.ToInt32(inputs[0]);
+            var high = Convert.ToInt32(inputs[1]);
+            var pf = new PasswordFinder(low, high);
+            return pf.FindNumberOfPasswordsExcludingGroups().ToString();
         }
     }
 }
