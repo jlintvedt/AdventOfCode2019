@@ -12,13 +12,23 @@ namespace AdventOfCode
         {
             private readonly int lowest, highest;
             public int[] current;
+            private readonly Func<bool> passwordIsValid;
 
-            public PasswordFinder(int lowerBound, int upperBound)
+            public PasswordFinder(int lowerBound, int upperBound, bool allowGroups)
             {
                 lowest = lowerBound;
                 highest = upperBound;
 
                 current = Common.Common.IntToTokenizedArray(lowest);
+
+                if (allowGroups)
+                {
+                    passwordIsValid = ArrayHasIdenticalNeighbours;
+                }
+                else
+                {
+                    passwordIsValid = ArrayHasIdenticalNeighboursExcludingGroups;
+                }
             }
 
             public static void SetLowestNonDecreasing(ref int[] array)
@@ -40,13 +50,13 @@ namespace AdventOfCode
                 }
             }
 
-            public int FindNumberOfPasswordsIncludingGroups()
+            public int FindNumberOfPasswords()
             {
                 int numValidPasswords = 0;
 
                 SetLowestNonDecreasing(ref current);
 
-                if (ArrayHasIdenticalNeighbours())
+                if (passwordIsValid())
                 {
                     numValidPasswords++;
                 }
@@ -62,35 +72,7 @@ namespace AdventOfCode
                 {
                     do{
                         IncreaseCurrent();
-                    } while (!ArrayHasIdenticalNeighbours());
-
-                    return Common.Common.IntArrayToInt(current);
-                }
-            }
-
-            public int FindNumberOfPasswordsExcludingGroups()
-            {
-                int numValidPasswords = 0;
-
-                SetLowestNonDecreasing(ref current);
-
-                if (ArrayHasIdenticalNeighboursExcludingGroups(ref current))
-                {
-                    numValidPasswords++;
-                }
-
-                while (FindNextValidPassword() <= highest)
-                {
-                    numValidPasswords++;
-                }
-
-                return numValidPasswords;
-
-                int FindNextValidPassword()
-                {
-                    do{
-                        IncreaseCurrent();
-                    } while (!ArrayHasIdenticalNeighboursExcludingGroups(ref current));
+                    } while (!passwordIsValid());
 
                     return Common.Common.IntArrayToInt(current);
                 }
@@ -133,17 +115,17 @@ namespace AdventOfCode
                 return false;
             }
 
-            public static bool ArrayHasIdenticalNeighboursExcludingGroups(ref int[] array)
+            public bool ArrayHasIdenticalNeighboursExcludingGroups()
             {
-                for (int i = 0; i < array.Length-1; i++)
+                for (int i = 0; i < current.Length-1; i++)
                 {
-                    if (array[i] == array[i+1])
+                    if (current[i] == current[i+1])
                     {
-                        if (i != 0 && array[i-1] == array[i])
+                        if (i != 0 && current[i-1] == current[i])
                         {
                             continue;
                         }
-                        if (i != (array.Length - 2) && array[i] == array[i + 2])
+                        if (i != (current.Length - 2) && current[i] == current[i + 2])
                         {
                             continue;
                         }
@@ -161,8 +143,8 @@ namespace AdventOfCode
             var inputs = input.Split("-");
             var low = Convert.ToInt32(inputs[0]);
             var high = Convert.ToInt32(inputs[1]);
-            var pf = new PasswordFinder(low, high);
-            return pf.FindNumberOfPasswordsIncludingGroups().ToString();
+            var pf = new PasswordFinder(low, high, allowGroups:true);
+            return pf.FindNumberOfPasswords().ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
@@ -171,8 +153,8 @@ namespace AdventOfCode
             var inputs = input.Split("-");
             var low = Convert.ToInt32(inputs[0]);
             var high = Convert.ToInt32(inputs[1]);
-            var pf = new PasswordFinder(low, high);
-            return pf.FindNumberOfPasswordsExcludingGroups().ToString();
+            var pf = new PasswordFinder(low, high, allowGroups:false);
+            return pf.FindNumberOfPasswords().ToString();
         }
     }
 }

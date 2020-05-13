@@ -68,30 +68,5 @@ namespace AdventOfCodeTests
             // Assert
             CollectionAssert.AreEqual(expected, input);
         }
-
-        [TestMethod]
-        public void PasswordFinder_ArrayHasIdenticalNeighboursExcludingGroups()
-        {
-            int[] array;
-            array = (new int[6] { 1, 2, 3, 4, 5, 5 });
-            Assert.IsTrue(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 2, 3, 4, 4, 5 });
-            Assert.IsTrue(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 1, 1, 1, 2, 2 });
-            Assert.IsTrue(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 1, 2, 2, 2, 2 });
-            Assert.IsTrue(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-
-            array = (new int[6] { 1, 2, 3, 4, 5, 6 });
-            Assert.IsFalse(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 2, 3, 4, 4, 4 });
-            Assert.IsFalse(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 2, 3, 3, 3, 4 });
-            Assert.IsFalse(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 1, 1, 2, 3, 4 });
-            Assert.IsFalse(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-            array = (new int[6] { 1, 2, 3, 4, 4, 4 });
-            Assert.IsFalse(AdventOfCode.Day04.PasswordFinder.ArrayHasIdenticalNeighboursExcludingGroups(ref array));
-        }
     }
 }
