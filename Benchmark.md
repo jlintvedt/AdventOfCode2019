@@ -14,10 +14,7 @@ Intel Core i7-8650U CPU 1.90GHz (Kaby Lake R), 1 CPU, 8 logical and 4 physical c
 | D01_P2 | 100000 | 13.36 us | 0.280 us | 0.719 us | 13.18 us |
 
 ## Day 02
-| Method |     N |        Mean |     Error |    StdDev |
-|------- |------ |------------:|----------:|----------:|
-| D02_P1 | 10000 |    10.67 us |  0.204 us |  0.191 us |
-| D02_P2 | 10000 | 2,947.95 us | 56.586 us | 50.162 us |
+
 
 ## Day 03
 | Method |     N |     Mean |    Error |   StdDev |

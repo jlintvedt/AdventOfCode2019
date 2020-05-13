@@ -1,5 +1,10 @@
-﻿using AdventOfCode;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+using AdventOfCode;
+using Mode = AdventOfCode.IntcodeInterpreter.Mode;
+using Instruction = AdventOfCode.IntcodeInterpreter.Instruction;
+using IntcodeInterpreter = AdventOfCode.IntcodeInterpreter;
 
 namespace AdventOfCodeTests
 {
@@ -94,7 +99,7 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
-        public void ExecuteUntilHalt_AddMultiply()
+        public void ExecuteProgram_AddMultiply()
         {
             // Arrange
             var program = "1,9,10,3,2,3,11,0,99,30,40,50";
@@ -106,6 +111,54 @@ namespace AdventOfCodeTests
 
             // Assert
             Assert.AreEqual(result, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ParseInstruction_Add()
+        {
+            // Arrange
+            var addPositionPosition = 0001;
+            var addImmediatePosition = 0101;
+            var addPositionImmediate = 1001;
+            var addImmediateImmediate = 1101;
+            var modes = new Mode[2];
+
+            // Act & Assert
+            Assert.AreEqual(Instruction.Add, IntcodeInterpreter.ParseInstruction(addPositionPosition, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Position }, modes);
+
+            Assert.AreEqual(Instruction.Add, IntcodeInterpreter.ParseInstruction(addImmediatePosition, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Position }, modes);
+
+            Assert.AreEqual(Instruction.Add, IntcodeInterpreter.ParseInstruction(addPositionImmediate, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Immediate }, modes);
+
+            Assert.AreEqual(Instruction.Add, IntcodeInterpreter.ParseInstruction(addImmediateImmediate, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Immediate }, modes);
+        }
+
+        [TestMethod]
+        public void ParseInstruction_Multiply()
+        {
+            // Arrange
+            var multiplyPositionPosition = 0002;
+            var multiplyImmediatePosition = 0102;
+            var multiplyPositionImmediate = 1002;
+            var multiplyImmediateImmediate = 1102;
+            var modes = new Mode[2];
+
+            // Act & Assert
+            Assert.AreEqual(Instruction.Multiply, IntcodeInterpreter.ParseInstruction(multiplyPositionPosition, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Position }, modes);
+
+            Assert.AreEqual(Instruction.Multiply, IntcodeInterpreter.ParseInstruction(multiplyImmediatePosition, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Position }, modes);
+
+            Assert.AreEqual(Instruction.Multiply, IntcodeInterpreter.ParseInstruction(multiplyPositionImmediate, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Position, Mode.Immediate }, modes);
+
+            Assert.AreEqual(Instruction.Multiply, IntcodeInterpreter.ParseInstruction(multiplyImmediateImmediate, ref modes));
+            CollectionAssert.AreEqual(new Mode[2] { Mode.Immediate, Mode.Immediate }, modes);
         }
     }
 }

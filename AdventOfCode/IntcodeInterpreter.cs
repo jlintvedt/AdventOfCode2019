@@ -7,6 +7,7 @@ namespace AdventOfCode
     {
         private readonly int[] initialMemory;
         private readonly int[] memory;
+        private Mode[] modes;
 
         private int instructionPointer;
         private Instruction currentInstruction;
@@ -15,6 +16,7 @@ namespace AdventOfCode
 
         public IntcodeInterpreter(string programString)
         {
+            modes = new Mode[2];
             initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
             memory = new int[initialMemory.Length];
             ResetMemory();
@@ -105,41 +107,82 @@ namespace AdventOfCode
 
         private void PerformInstructionAdd(int param1, int param2, int param3)
         {
-            memory[param3] = memory[param1] + memory[param2];
+            var value1 = modes[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = modes[1] == Mode.Immediate ? param2 : memory[param2];
+            memory[param3] = value1 + value2;
             MovePosition(4);
         }
 
         private void PerformInstructionMultiply(int param1, int param2, int param3)
         {
-            memory[param3] = memory[param1] * memory[param2];
+            var value1 = modes[0] == Mode.Immediate ? param1 : memory[param1];
+            var value2 = modes[1] == Mode.Immediate ? param2 : memory[param2];
+            memory[param3] = value1 * value2;
             MovePosition(4);
         }
 
         private Instruction GetCurrentInstruction()
         {
-            var current = memory[instructionPointer];
+            return ParseInstruction(memory[instructionPointer], ref modes);
+        }
 
-            if (current == 1)
+        public static Instruction ParseInstruction(int instruction, ref Mode[] modes)
+        {
+            int opcode = instruction % 100;
+            int modesraw = (instruction - opcode) / 100;
+
+            if (opcode == 1)
             {
+                ParseModes(modesraw, 2, ref modes);
                 return Instruction.Add;
             }
-            if (current == 2)
+            if (opcode == 2)
             {
+                ParseModes(modesraw, 2, ref modes);
                 return Instruction.Multiply;
             }
-            if (current == 99)
+            if (opcode == 99)
             {
                 return Instruction.Halt;
             }
             return Instruction.Unknown;
         }
 
-        private enum Instruction
+        private static void ParseModes(int raw, int numModes, ref Mode[] modes)
+        {
+            for (int i = 0; i < numModes; i++)
+            {
+                if (raw % 10 == 0)
+                {
+                    // Last digit is 0 -> Position mode
+                    modes[i] = Mode.Position;
+                    raw /= 10;
+                }
+                else if (raw % 10 == 1)
+                {
+                    // Last digit is 1 -> Immediate mode
+                    modes[i] = Mode.Immediate;
+                    raw /= 10;
+                }
+                else
+                {
+                    throw new Exception($"Unknown mode in instruction [{raw}] (last digit must be <= 1)");
+                }
+            }
+        }
+
+        public enum Instruction
         {
             Add,
             Multiply,
             Halt,
-            Unknown
+            Unknown,
+        }
+
+        public enum Mode
+        {
+            Position,
+            Immediate,
         }
     }
 }
