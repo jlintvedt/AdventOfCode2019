@@ -1,4 +1,5 @@
 ﻿using AdventOfCode.Common;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -137,5 +138,56 @@ namespace AdventOfCodeTests
             Common.ConvertHexStringToBitArray("x");
         }
 
+        [TestMethod]
+        public void IntToArray_ValidInput()
+        {
+            // Arrange
+            var input = 123456;
+            var expected = new int[] { 1, 2, 3, 4, 5, 6 };
+
+            // Act
+            var result = Common.IntToTokenizedArray(input);
+
+            // Assert
+            CollectionAssert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void IntToArray_InvalidInput()
+        {
+            // Arrange
+            Action actTooLow = () => Common.IntToTokenizedArray(12345);
+            Action actTooHigh = () => Common.IntToTokenizedArray(1234567);
+
+            // Act & Assert
+            actTooLow.Should().Throw<ArgumentException>();
+            actTooHigh.Should().Throw<ArgumentException>();
+        }
+
+        [TestMethod]
+        public void IntArrayToInt_ValidInput()
+        {
+            // Arrange
+            var input = new int[6] { 1, 2, 3, 4, 5, 6 };
+            var expected = 123456;
+
+            // Act
+            var result = Common.IntArrayToInt(input);
+
+            // assert
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void IntArrayToInt_InvalidInput()
+        {
+            // Arrange
+            Action actTooShort = () => Common.IntArrayToInt(new int[5] { 1, 2, 3, 4, 5 });
+            Action actTooLong = () => Common.IntArrayToInt(new int[7] { 1, 2, 3, 4, 5, 6, 7 });
+
+            // Act & Assert
+            actTooShort.Should().Throw<ArgumentException>();
+            actTooLong.Should().Throw<ArgumentException>();
+        }
     }
 }
