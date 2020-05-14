@@ -14,16 +14,14 @@ namespace AdventOfCode.Intcode
 
         public int numInstructionsExecuted;
 
-        public int In { get; set; }
-        public Queue<int> OutBuffer { get; private set; }
+        public int IoIn { get; set; }
+        public int IoOut { get; private set; }
 
         public Interpreter(string programString)
         {
             initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
             memory = new int[initialMemory.Length];
             ResetMemory();
-
-            OutBuffer = new Queue<int>();
         }
 
         public void ResetMemory()
@@ -66,13 +64,32 @@ namespace AdventOfCode.Intcode
             }
         }
 
-        public int ExecuteProgram_NounVerb(int noun, int verb, int maxInstructions = 1000)
+        public int ExecuteProgram_NounVerb(int noun, int verb, int maxInstructions = 1000, bool resetMemory = true)
         {
+            if (resetMemory)
+            {
+                ResetMemory();
+            }
+
             SetInput(noun, verb);
 
             ExecuteProgram(maxInstructions);
 
             return GetParameter(0);
+        }
+
+        public int ExecuteProgram_InputOutput(int input, int maxInstructions = 1000, bool resetMemory = true)
+        {
+            if (resetMemory)
+            {
+                ResetMemory();
+            }
+
+            IoIn = input;
+
+            ExecuteProgram(maxInstructions);
+
+            return IoOut;
         }
 
         public void ExecuteInstruction()
@@ -122,9 +139,15 @@ namespace AdventOfCode.Intcode
             return memory[address];
         }
 
-        private void MovePosition(int spaces)
+        private void MoveInstructionPointer(int spaces)
         {
             instructionPointer += spaces;
+            instruction = GetCurrentInstruction();
+        }
+
+        private void SetInstructionPointer(int newPos)
+        {
+            instructionPointer = newPos;
             instruction = GetCurrentInstruction();
         }
 
@@ -141,7 +164,7 @@ namespace AdventOfCode.Intcode
 
             // Execute
             memory[param3] = value1 + value2;
-            MovePosition(4);
+            MoveInstructionPointer(4);
         }
 
         private void PerformInstructionMultiply()
@@ -157,7 +180,7 @@ namespace AdventOfCode.Intcode
 
             // Execute
             memory[param3] = value1 * value2;
-            MovePosition(4);
+            MoveInstructionPointer(4);
         }
 
         private void PerformInstructionInput()
@@ -166,8 +189,8 @@ namespace AdventOfCode.Intcode
             var param1 = memory[instructionPointer + 1];
 
             // Execute
-            memory[param1] = In;
-            MovePosition(2);
+            memory[param1] = IoIn;
+            MoveInstructionPointer(2);
         }
 
         private void PerformInstructionOutput()
@@ -177,50 +200,56 @@ namespace AdventOfCode.Intcode
 
             // Values
             var value = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            
+
             // Execute
-            OutBuffer.Enqueue(value);
-            MovePosition(2);
+            IoOut = value;
+            MoveInstructionPointer(2);
         }
 
         private void PerformInstructionJumpIfTrue()
         {
-            throw new NotImplementedException();
-
             // Params
             var param1 = memory[instructionPointer + 1];
             var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
 
             // Values
             var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
 
             // Execute
-            MovePosition(4);
+            if (value1 != 0)
+            {
+                SetInstructionPointer(value2);
+            }
+            else
+            {
+                MoveInstructionPointer(3);
+            }
         }
 
         private void PerformInstructionJumpIfFalse()
         {
-            throw new NotImplementedException();
-
             // Params
             var param1 = memory[instructionPointer + 1];
             var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
 
             // Values
             var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
 
             // Execute
-            MovePosition(4);
+            if (value1 == 0)
+            {
+                SetInstructionPointer(value2);
+            }
+            else
+            {
+                MoveInstructionPointer(3);
+            }
         }
 
         private void PerformInstructionLessThan()
         {
-            throw new NotImplementedException();
-
             // Params
             var param1 = memory[instructionPointer + 1];
             var param2 = memory[instructionPointer + 2];
@@ -231,13 +260,12 @@ namespace AdventOfCode.Intcode
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
 
             // Execute
-            MovePosition(4);
+            memory[param3] = value1 < value2 ? 1 : 0;
+            MoveInstructionPointer(4);
         }
 
         private void PerformInstructionEquals()
         {
-            throw new NotImplementedException();
-
             // Params
             var param1 = memory[instructionPointer + 1];
             var param2 = memory[instructionPointer + 2];
@@ -248,7 +276,8 @@ namespace AdventOfCode.Intcode
             var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
 
             // Execute
-            MovePosition(4);
+            memory[param3] = value1 == value2 ? 1 : 0;
+            MoveInstructionPointer(4);
         }
 
         private Instruction GetCurrentInstruction()

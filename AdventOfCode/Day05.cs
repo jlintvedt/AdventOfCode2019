@@ -13,16 +13,18 @@ namespace AdventOfCode
         public static string Puzzle1(string input)
         {
             var intcode = new Intcode.Interpreter(input);
-            intcode.In = 1;
-            intcode.ExecuteProgram();
-
-            return intcode.OutBuffer.Last().ToString();
+            var idAirConditioner = 1;
+            var diagnosticsCode = intcode.ExecuteProgram_InputOutput(idAirConditioner);
+            return diagnosticsCode.ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var intcode = new Intcode.Interpreter(input);
+            var idThermalRadiator = 5;
+            var diagnosticsCode = intcode.ExecuteProgram_InputOutput(idThermalRadiator);
+            return diagnosticsCode.ToString();
         }
     }
 }

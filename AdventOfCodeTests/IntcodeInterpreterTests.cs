@@ -154,14 +154,100 @@ namespace AdventOfCodeTests
             var input = 13;
 
             // Act & Assert
-            intcode.In = input;
+            intcode.IoIn = input;
             intcode.ExecuteInstruction();
             Assert.AreEqual("13,0,4,0,99", intcode.GenerateProgramString());
 
             intcode.ExecuteInstruction();
-            Assert.AreEqual(1, intcode.OutBuffer.Count);
-            var output = intcode.OutBuffer.Dequeue();
-            Assert.AreEqual(input, output);
+            Assert.AreEqual(input, intcode.IoOut);
+        }
+
+        [TestMethod]
+        public void ExecuteInstruction_Equals_PositionMode()
+        {
+            // Arrange
+            var isequal = "8,5,6,7,99,66,66,-1";
+            var expected = "8,5,6,7,99,66,66,1";
+            var intcode = new Intcode.Interpreter(isequal);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+
+            // Arrange
+            var notequal = "8,5,6,7,99,66,77,-1";
+            expected = "8,5,6,7,99,66,77,0";
+            intcode = new Intcode.Interpreter(notequal);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ExecuteInstruction_Equals_ImmediateMode()
+        {
+            // Arrange
+            var isequal = "1108,66,66,5,99,-1";
+            var expected = "1108,66,66,5,99,1";
+            var intcode = new Intcode.Interpreter(isequal);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+
+            // Arrange
+            var notequal = "1108,66,77,5,99,-1";
+            expected = "1108,66,77,5,99,0";
+            intcode = new Intcode.Interpreter(notequal);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ExecuteInstruction_LessThan_PositionMode()
+        {
+            // Arrange
+            var islessthan = "7,5,6,7,99,66,77,-1";
+            var expected = "7,5,6,7,99,66,77,1";
+            var intcode = new Intcode.Interpreter(islessthan);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+
+            // Arrange
+            var notlessthan = "7,5,6,7,99,66,66,-1";
+            expected = "7,5,6,7,99,66,66,0";
+            intcode = new Intcode.Interpreter(notlessthan);
+
+            // Act && Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ExecuteInstruction_LessThan_ImmediateMode()
+        {
+            // Arrange
+            var islessthan = "1107,66,77,5,99,-1";
+            var expected = "1107,66,77,5,99,1";
+            var intcode = new Intcode.Interpreter(islessthan);
+
+            // Act & Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
+
+            // Arrange
+            var notlessthan = "1107,66,66,5,99,-1";
+            expected = "1107,66,66,5,99,0";
+            intcode = new Intcode.Interpreter(notlessthan);
+
+            // Act & Assert
+            intcode.ExecuteInstruction();
+            Assert.AreEqual(expected, intcode.GenerateProgramString());
         }
 
         [TestMethod]
@@ -177,6 +263,87 @@ namespace AdventOfCodeTests
 
             // Assert
             Assert.AreEqual(result, intcode.GenerateProgramString());
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_Equal()
+        {
+            // Arrange
+            // Compares input to 8. Outputs 1 (of it is) or 0( (if it is not).
+            var program_pm = "3,9,8,9,10,9,4,9,99,-1,8";
+            var program_im = "3,3,1108,-1,8,3,4,3,99";
+
+            // Act & Assert
+            // Position Mode
+            var intcode = new Intcode.Interpreter(program_pm);
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(4));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(8));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(10));
+
+            // Immediate Mode
+            intcode = new Intcode.Interpreter(program_im);
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(4));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(8));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(10));
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_LessThan()
+        {
+            // Arrange
+            // Checks if input is less than 8. Outputs 1 (of it is) or 0( (if it is not).
+            var program_pm = "3,9,7,9,10,9,4,9,99,-1,8";
+            var program_im = "3,3,1107,-1,8,3,4,3,99";
+
+            // Act & Assert
+            // Position Mode
+            var intcode = new Intcode.Interpreter(program_pm);
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(4));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(8));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(10));
+
+            // Immediate Mode
+            intcode = new Intcode.Interpreter(program_im);
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(4));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(8));
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(10));
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_JumpIf()
+        {
+            // Arrange
+            // Jump tests. Ouputs 0 (if input was 0) or (if input was non-zero)
+            var program_pm = "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9";
+            var program_im = "3,3,1105,-1,9,1101,0,0,12,4,12,99,1";
+
+            // Act & Assert
+            // Position Mode
+            var intcode = new Intcode.Interpreter(program_pm);
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(0));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(1));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(2));
+
+            // Immediate Mode
+            intcode = new Intcode.Interpreter(program_im);
+            Assert.AreEqual(0, intcode.ExecuteProgram_InputOutput(0));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(1));
+            Assert.AreEqual(1, intcode.ExecuteProgram_InputOutput(2));
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_ComparesAndJumps()
+        {
+            // Arrange
+            // Uses multiple instructions on both position and immediate mode.
+            // Outputs: 999 (if input <8) or 1000 (if input is 8) or 1001 (if input >8)
+            var program = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
+            var intcode = new Intcode.Interpreter(program);
+
+            // Act & Assert
+            Assert.AreEqual(999, intcode.ExecuteProgram_InputOutput(7));
+            Assert.AreEqual(1000, intcode.ExecuteProgram_InputOutput(8));
+            Assert.AreEqual(1001, intcode.ExecuteProgram_InputOutput(9));
         }
     }
 }

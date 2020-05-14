@@ -12,7 +12,7 @@ namespace AdventOfCode
         public static string Puzzle1(string input)
         {
             var intcode = new Intcode.Interpreter(input);
-            return intcode.ExecuteProgram_NounVerb(12, 2).ToString();
+            return intcode.ExecuteProgram_NounVerb(12, 2, resetMemory:false).ToString();
         }
 
         // == == == == == Puzzle 2 == == == == ==
@@ -28,7 +28,6 @@ namespace AdventOfCode
                     {
                         return (100 * noun + verb).ToString();
                     }
-                    intcode.ResetMemory();
                 }
             }
 
