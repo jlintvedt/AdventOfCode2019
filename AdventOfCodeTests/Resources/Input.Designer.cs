@@ -265,5 +265,14 @@ namespace AdventOfCodeTests.Resources {
                 return ResourceManager.GetString("D06_Puzzle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string D07_Puzzle {
+            get {
+                return ResourceManager.GetString("D07_Puzzle", resourceCulture);
+            }
+        }
     }
 }
