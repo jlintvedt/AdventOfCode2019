@@ -24,8 +24,47 @@ namespace AdventOfCode
 
                     var inOrbit = GetOrCreateSpaceObject(obj[1]);
                     so.AddObjectToOrbit(inOrbit);
+                    inOrbit.Orbiting = so;
                 }
                 centerOfMass = objects["COM"];
+            }
+
+            public int FindMinimumOrbitalTransfersRequired(string startName, string goalName)
+            {
+                var start = objects[startName];
+                var goal = objects[goalName];
+
+                var startToCom = new List<string>();
+                var goalToCom = new List<string>();
+
+                FindRouteToCenterOfMassRecursively(start.Orbiting, startToCom);
+                FindRouteToCenterOfMassRecursively(goal.Orbiting, goalToCom);
+
+                string commonNode = centerOfMass.Self;
+                foreach (var node in startToCom)
+                {
+                    if (goalToCom.Contains(node))
+                    {
+                        commonNode = node;
+                        break;
+                    }
+                }
+
+                var transfersRequired = startToCom.IndexOf(commonNode);
+                transfersRequired += goalToCom.IndexOf(commonNode);
+
+                return transfersRequired;
+            }
+
+            private void FindRouteToCenterOfMassRecursively(SpaceObject so, List<string> route)
+            {
+                if (so == null)
+                {
+                    return;
+                }
+
+                route.Add(so.Self);
+                FindRouteToCenterOfMassRecursively(so.Orbiting, route);
             }
 
             public int CalculateTotalNumberOfOrbits()
@@ -58,6 +97,7 @@ namespace AdventOfCode
             private class SpaceObject
             {
                 public string Self;
+                public SpaceObject Orbiting;
                 public List<SpaceObject> InOrbit;
 
                 public SpaceObject(string name)
@@ -84,7 +124,9 @@ namespace AdventOfCode
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var orbits = input.Split(Environment.NewLine);
+            var uom = new UniversalOrbitMap(orbits);
+            return uom.FindMinimumOrbitalTransfersRequired("YOU", "SAN").ToString();
         }
     }
 }

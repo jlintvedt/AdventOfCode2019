@@ -8,6 +8,7 @@ namespace AdventOfCodeTests
     {
         private string input_puzzle;
         private string input_example1;
+        private string input_example2;
 
         [TestInitialize]
         public void LoadInput()
@@ -15,6 +16,7 @@ namespace AdventOfCodeTests
             string day = "06";
             input_puzzle = Resources.Input.ResourceManager.GetObject($"D{day}_Puzzle").ToString();
             input_example1 = string.Format("COM)B{0}B)C{0}C)D{0}D)E{0}E)F{0}B)G{0}G)H{0}D)I{0}E)J{0}J)K{0}K)L", Environment.NewLine);
+            input_example2 = string.Format("COM)B{0}B)C{0}C)D{0}D)E{0}E)F{0}B)G{0}G)H{0}D)I{0}E)J{0}J)K{0}K)L{0}K)YOU{0}I)SAN", Environment.NewLine);
         }
 
         [TestMethod]
@@ -50,17 +52,17 @@ namespace AdventOfCodeTests
             var result = AdventOfCode.Day06.Puzzle2(input_puzzle);
 
             // Assert
-            Assert.AreEqual($"{input_puzzle}_Puzzle2", result);
+            Assert.AreEqual("337", result);
         }
 
-        //[TestMethod]
-        //public void Puzzle2_Example()
-        //{
-        //    // Act
-        //    var result = AdventOfCode.Day06.Puzzle2(input_example2);
+        [TestMethod]
+        public void Puzzle2_Example()
+        {
+            // Act
+            var result = AdventOfCode.Day06.Puzzle2(input_example2);
 
-        //    // Assert
-        //    Assert.AreEqual($"{input_example2}_Puzzle2", result);
-        //}
+            // Assert
+            Assert.AreEqual("4", result);
+        }
     }
 }
