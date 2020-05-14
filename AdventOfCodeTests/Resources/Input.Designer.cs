@@ -200,5 +200,70 @@ namespace AdventOfCodeTests.Resources {
                 return ResourceManager.GetString("D05_Puzzle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S5F)4L5
+        ///7BP)2V1
+        ///DHC)KGY
+        ///JZG)PN7
+        ///RV4)123
+        ///2DJ)LPW
+        ///19G)31B
+        ///H4Z)TC6
+        ///3YP)XTQ
+        ///H9Q)QXJ
+        ///R77)3FM
+        ///JD3)GXY
+        ///3WS)YHL
+        ///X9K)BWP
+        ///656)7PW
+        ///9S2)LGY
+        ///CZB)VXR
+        ///1YS)Y5H
+        ///1XY)L9Y
+        ///NH1)YW5
+        ///HVD)2PS
+        ///Y1C)4SY
+        ///LKH)1PV
+        ///7HZ)GZD
+        ///TJZ)WV7
+        ///V8K)Z28
+        ///DB4)S1Q
+        ///TRV)4TM
+        ///3L3)6YN
+        ///LD1)4PR
+        ///1XP)3YF
+        ///B6Q)QRX
+        ///QSL)JV7
+        ///MFC)QSJ
+        ///TC2)9JZ
+        ///PLS)2TK
+        ///T6Y)DNB
+        ///HDT)BY7
+        ///44G)FF3
+        ///682)PLS
+        ///91Z)DNX
+        ///WKK)JWP
+        ///FF3)F32
+        ///CGL)F92
+        ///YCF)8XZ
+        ///VKQ)J6C
+        ///DP4)6JF
+        ///DWB)5RF
+        ///5TG)WRP
+        ///LWN)N2C
+        ///5QB)34Z
+        ///LK9)FB9
+        ///VK9)WQM
+        ///PLR)DP7
+        ///BLV)KL4
+        ///2XT)R7V
+        ///CP3)TJT        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string D06_Puzzle {
+            get {
+                return ResourceManager.GetString("D06_Puzzle", resourceCulture);
+            }
+        }
     }
 }
