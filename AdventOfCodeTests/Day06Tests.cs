@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace AdventOfCodeTests
 {
@@ -7,15 +8,13 @@ namespace AdventOfCodeTests
     {
         private string input_puzzle;
         private string input_example1;
-        private string input_example2;
 
         [TestInitialize]
         public void LoadInput()
         {
             string day = "06";
             input_puzzle = Resources.Input.ResourceManager.GetObject($"D{day}_Puzzle").ToString();
-            input_example1 = Resources.Input.ResourceManager.GetObject($"D{day}_E1").ToString();
-            input_example2 = Resources.Input.ResourceManager.GetObject($"D{day}_E2").ToString();
+            input_example1 = string.Format("COM)B{0}B)C{0}C)D{0}D)E{0}E)F{0}B)G{0}G)H{0}D)I{0}E)J{0}J)K{0}K)L", Environment.NewLine);
         }
 
         [TestMethod]
@@ -31,7 +30,7 @@ namespace AdventOfCodeTests
             var result = AdventOfCode.Day06.Puzzle1(input_puzzle);
 
             // Assert
-            Assert.AreEqual($"{input_puzzle}_Puzzle1", result);
+            Assert.AreEqual("140608", result);
         }
 
         [TestMethod]
@@ -41,7 +40,7 @@ namespace AdventOfCodeTests
             var result = AdventOfCode.Day06.Puzzle1(input_example1);
 
             // Assert
-            Assert.AreEqual($"{input_example1}_Puzzle1", result);
+            Assert.AreEqual("42", result);
         }
 
         [TestMethod]
@@ -54,14 +53,14 @@ namespace AdventOfCodeTests
             Assert.AreEqual($"{input_puzzle}_Puzzle2", result);
         }
 
-        [TestMethod]
-        public void Puzzle2_Example()
-        {
-            // Act
-            var result = AdventOfCode.Day06.Puzzle2(input_example2);
+        //[TestMethod]
+        //public void Puzzle2_Example()
+        //{
+        //    // Act
+        //    var result = AdventOfCode.Day06.Puzzle2(input_example2);
 
-            // Assert
-            Assert.AreEqual($"{input_example2}_Puzzle2", result);
-        }
+        //    // Assert
+        //    Assert.AreEqual($"{input_example2}_Puzzle2", result);
+        //}
     }
 }
