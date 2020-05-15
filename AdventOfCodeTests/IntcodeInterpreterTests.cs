@@ -27,20 +27,6 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
-        public void SetInput_ShouldUpdateProgram()
-        {
-            // Arrange
-            var program = "1,0,0,0,99";
-            var intcode = new Intcode.Interpreter(program);
-
-            // Act
-            intcode.SetInput(22, 33);
-
-            // Assert
-            Assert.AreEqual("1,22,33,0,99", intcode.GenerateProgramString());
-        }
-
-        [TestMethod]
         public void ExecuteInstruction_Add()
         {
             // Arrange
@@ -154,12 +140,12 @@ namespace AdventOfCodeTests
             var input = 13;
 
             // Act & Assert
-            intcode.InputBuffer = input;
+            intcode.SetInput(input);
             intcode.ExecuteInstruction();
             Assert.AreEqual("13,0,4,0,99", intcode.GenerateProgramString());
 
             intcode.ExecuteInstruction();
-            Assert.AreEqual(input, intcode.IoOut);
+            Assert.AreEqual(input, intcode.GetOutput());
         }
 
         [TestMethod]

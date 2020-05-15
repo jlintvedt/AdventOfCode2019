@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace AdventOfCode.Intcode
 {
@@ -14,14 +16,13 @@ namespace AdventOfCode.Intcode
 
         public int numInstructionsExecuted;
 
-        private readonly Queue<int> bufferedInput;
+        public Channel<int> InputChannel;
+        public Channel<int> OutputChannel;
 
-        public int InputBuffer { private get { return bufferedInput.Dequeue(); } set { bufferedInput.Enqueue(value); } }
-        public int IoOut { get; private set; }
-
-        public Interpreter(string programString)
+        public Interpreter(string programString, Channel<int> inputChannel = null, Channel<int> outputChannel = null)
         {
-            bufferedInput = new Queue<int>();
+            InputChannel = inputChannel ?? Channel.CreateUnbounded<int>();
+            OutputChannel = outputChannel ?? Channel.CreateUnbounded<int>();
 
             initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
             memory = new int[initialMemory.Length];
@@ -36,23 +37,36 @@ namespace AdventOfCode.Intcode
             instruction = GetCurrentInstruction();
         }
 
+        public void SetInput(int input)
+        {
+            if (!InputChannel.Writer.TryWrite(input))
+            {
+                throw new Exception("Failed to write input to InputChannel");
+            }
+        }
+
+        public int GetOutput()
+        {
+            if (!OutputChannel.Reader.TryRead(out int output))
+            {
+                throw new Exception("Program executed to halt, but provided no output");
+            }
+            return output;
+        }
+
+        public int GetLastOutput()
+        {
+            int last = Int32.MinValue;
+            while (OutputChannel.Reader.TryRead(out int output)) { last = output; }
+            return last;
+        }
+
         public string GenerateProgramString()
         {
             return string.Join(",", memory);
         }
 
-        public void SetInput(int noun, int verb)
-        {
-            if (noun < 0 || noun > 99 || verb < 0 || verb > 99)
-            {
-                throw new ArgumentException($"Noun[{noun}] and verb[{verb}] must be [0,99]");
-            }
-
-            SetParamater(1, noun);
-            SetParamater(2, verb);
-        }
-
-        public void ExecuteProgram(int maxInstructions = 1000)
+        public async Task ExecuteProgram(int maxInstructions = 1000)
         {
             while (instruction.Operation != Operation.Halt)
             {
@@ -64,7 +78,7 @@ namespace AdventOfCode.Intcode
                 {
                     throw new Exception($"Max instructions [{maxInstructions}] reached. Aborting");
                 }
-                ExecuteInstruction();
+                await ExecuteInstruction();
             }
         }
 
@@ -75,7 +89,13 @@ namespace AdventOfCode.Intcode
                 ResetMemory();
             }
 
-            SetInput(noun, verb);
+            if (noun < 0 || noun > 99 || verb < 0 || verb > 99)
+            {
+                throw new ArgumentException($"Noun[{noun}] and verb[{verb}] must be [0,99]");
+            }
+
+            SetParamater(1, noun);
+            SetParamater(2, verb);
 
             ExecuteProgram(maxInstructions);
 
@@ -89,14 +109,26 @@ namespace AdventOfCode.Intcode
                 ResetMemory();
             }
 
-            InputBuffer = input;
+            SetInput(input);
 
             ExecuteProgram(maxInstructions);
 
-            return IoOut;
+            return GetLastOutput();
         }
 
-        public void ExecuteInstruction()
+        public async Task ExecuteProgram_StartAsync(int input, int maxInstructions = 1000, bool resetMemory = true)
+        {
+            if (resetMemory)
+            {
+                ResetMemory();
+            }
+
+            SetInput(input);
+
+            await ExecuteProgram(maxInstructions);
+        }
+
+        public async Task ExecuteInstruction()
         {
             switch (instruction.Operation)
             {
@@ -107,10 +139,10 @@ namespace AdventOfCode.Intcode
                     PerformInstructionMultiply();
                     break;
                 case Operation.Input:
-                    PerformInstructionInput();
+                    await PerformInstructionInput();
                     break;
                 case Operation.Output:
-                    PerformInstructionOutput();
+                    await PerformInstructionOutput();
                     break;
                 case Operation.JumpIfTrue:
                     PerformInstructionJumpIfTrue();
@@ -187,17 +219,18 @@ namespace AdventOfCode.Intcode
             MoveInstructionPointer(4);
         }
 
-        private void PerformInstructionInput()
+        private async Task PerformInstructionInput()
         {
             // Params
             var param1 = memory[instructionPointer + 1];
 
             // Execute
-            memory[param1] = InputBuffer;
+            memory[param1] = await InputChannel.Reader.ReadAsync();
+
             MoveInstructionPointer(2);
         }
 
-        private void PerformInstructionOutput()
+        private async Task PerformInstructionOutput()
         {
             // Params
             var param1 = memory[instructionPointer + 1];
@@ -206,7 +239,7 @@ namespace AdventOfCode.Intcode
             var value = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
 
             // Execute
-            IoOut = value;
+            await OutputChannel.Writer.WriteAsync(value);
             MoveInstructionPointer(2);
         }
 
