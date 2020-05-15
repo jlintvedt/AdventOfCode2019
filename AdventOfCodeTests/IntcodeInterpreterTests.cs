@@ -154,7 +154,7 @@ namespace AdventOfCodeTests
             var input = 13;
 
             // Act & Assert
-            intcode.IoIn = input;
+            intcode.InputBuffer = input;
             intcode.ExecuteInstruction();
             Assert.AreEqual("13,0,4,0,99", intcode.GenerateProgramString());
 

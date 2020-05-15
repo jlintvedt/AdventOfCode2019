@@ -14,11 +14,15 @@ namespace AdventOfCode.Intcode
 
         public int numInstructionsExecuted;
 
-        public int IoIn { get; set; }
+        private readonly Queue<int> bufferedInput;
+
+        public int InputBuffer { private get { return bufferedInput.Dequeue(); } set { bufferedInput.Enqueue(value); } }
         public int IoOut { get; private set; }
 
         public Interpreter(string programString)
         {
+            bufferedInput = new Queue<int>();
+
             initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
             memory = new int[initialMemory.Length];
             ResetMemory();
@@ -85,7 +89,7 @@ namespace AdventOfCode.Intcode
                 ResetMemory();
             }
 
-            IoIn = input;
+            InputBuffer = input;
 
             ExecuteProgram(maxInstructions);
 
@@ -189,7 +193,7 @@ namespace AdventOfCode.Intcode
             var param1 = memory[instructionPointer + 1];
 
             // Execute
-            memory[param1] = IoIn;
+            memory[param1] = InputBuffer;
             MoveInstructionPointer(2);
         }
 
