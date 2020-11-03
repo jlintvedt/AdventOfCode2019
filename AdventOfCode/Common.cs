@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AdventOfCode.Common
 {
@@ -135,6 +136,16 @@ namespace AdventOfCode.Common
             return GetPermutations(list, length - 1)
                 .SelectMany(t => list.Where(e => !t.Contains(e)),
                     (t1, t2) => t1.Concat(new T[] { t2 }));
+        }
+
+        public static string TwoDimIntArrayToString(int[,] array)
+        {
+            var sb = new StringBuilder();
+            foreach (var i in array)
+            {
+                sb.Append(i.ToString());
+            }
+            return sb.ToString();
         }
     }
 }

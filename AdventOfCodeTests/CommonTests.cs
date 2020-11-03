@@ -189,5 +189,19 @@ namespace AdventOfCodeTests
             actTooShort.Should().Throw<ArgumentException>();
             actTooLong.Should().Throw<ArgumentException>();
         }
+
+        [TestMethod]
+        public void TwoDimIntArrayToString()
+        {
+            //Arrange
+            var oneRow = new int[,] { { 1, 2, 3 } };
+            var twoByTwo = new int[,] { { 1, 2 }, { 3, 4 } };
+            var oneColumn = new int[,] { { 1 }, { 2 }, { 3 }, { 4 },{ 5 } };
+
+            // Act & Assert
+            Assert.AreEqual("123", Common.TwoDimIntArrayToString(oneRow));
+            Assert.AreEqual("1234", Common.TwoDimIntArrayToString(twoByTwo));
+            Assert.AreEqual("12345", Common.TwoDimIntArrayToString(oneColumn));
+        }
     }
 }

@@ -12,9 +12,12 @@ namespace AdventOfCode
         public class SpaceImageFormat
         {
             private readonly List<int[,]> Layers;
+            private readonly int width, height;
 
             public SpaceImageFormat(int[] pixels, int width, int height)
             {
+                this.width = width;
+                this.height = height;
                 var pixelPerLayer = width * height;
                 if (pixels.Length%pixelPerLayer!=0)
                 {
@@ -73,6 +76,28 @@ namespace AdventOfCode
                 validationNumber = occurrences[1] * occurrences[2];
                 return occurrences[0];
             }
+
+
+            public int[,] MergeLayers()
+            {
+                int[,] image = new int[height, width];
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        for (int l = 0; l < Layers.Count; l++)
+                        {
+                            int pixel = Layers[l][y,x];
+                            if (pixel < 2)
+                            {
+                                image[y, x] = pixel;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return image;
+            }
         }
 
         // == == == == == Puzzle 1 == == == == ==
@@ -86,7 +111,10 @@ namespace AdventOfCode
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var pixels = Common.Common.ParseStringToIntArray(input);
+            var sif = new SpaceImageFormat(pixels, 25, 6);
+            var image = sif.MergeLayers();
+            return Common.Common.TwoDimIntArrayToString(image);
         }
     }
 }
