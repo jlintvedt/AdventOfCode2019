@@ -13,6 +13,7 @@ namespace AdventOfCode.Intcode
 
         private int instructionPointer;
         private Instruction instruction;
+        private int relativeBase;
 
         public int numInstructionsExecuted;
 
@@ -34,6 +35,7 @@ namespace AdventOfCode.Intcode
             initialMemory.CopyTo(memory, 0);
             numInstructionsExecuted = 0;
             instructionPointer = 0;
+            relativeBase = 0;
             instruction = GetCurrentInstruction();
         }
 
@@ -156,6 +158,9 @@ namespace AdventOfCode.Intcode
                 case Operation.Equals:
                     PerformInstructionEquals();
                     break;
+                case Operation.AdjustRelativeBase:
+                    PerformInstructionAdjustRelativeBase();
+                    break;
                 case Operation.Halt:
                 case Operation.Unknown:
                 default:
@@ -189,14 +194,12 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionAdd()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
+
+            // Params
+            var param3 = memory[instructionPointer + 3];
 
             // Execute
             memory[param3] = value1 + value2;
@@ -205,14 +208,12 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionMultiply()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
+
+            // Params
+            var param3 = memory[instructionPointer + 3];
 
             // Execute
             memory[param3] = value1 * value2;
@@ -232,11 +233,8 @@ namespace AdventOfCode.Intcode
 
         private async Task PerformInstructionOutput()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-
             // Values
-            var value = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
+            var value = GetValue(1);
 
             // Execute
             await OutputChannel.Writer.WriteAsync(value);
@@ -245,13 +243,9 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionJumpIfTrue()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
 
             // Execute
             if (value1 != 0)
@@ -266,13 +260,9 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionJumpIfFalse()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
 
             // Execute
             if (value1 == 0)
@@ -287,14 +277,12 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionLessThan()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
+
+            // Params
+            var param3 = memory[instructionPointer + 3];
 
             // Execute
             memory[param3] = value1 < value2 ? 1 : 0;
@@ -303,18 +291,44 @@ namespace AdventOfCode.Intcode
 
         private void PerformInstructionEquals()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
-            var param2 = memory[instructionPointer + 2];
-            var param3 = memory[instructionPointer + 3];
-
             // Values
-            var value1 = instruction.Mode[0] == Mode.Immediate ? param1 : memory[param1];
-            var value2 = instruction.Mode[1] == Mode.Immediate ? param2 : memory[param2];
+            var value1 = GetValue(1);
+            var value2 = GetValue(2);
+
+            // Params
+            var param3 = memory[instructionPointer + 3];
 
             // Execute
             memory[param3] = value1 == value2 ? 1 : 0;
             MoveInstructionPointer(4);
+        }
+
+        public void PerformInstructionAdjustRelativeBase()
+        {
+            // Value
+            var value = GetValue(1);
+
+            // Execute
+            relativeBase += value;
+            MoveInstructionPointer(2);
+        }
+
+        /// <summary>
+        /// GetValue return the value for given parameter position according to the instruction mode
+        /// </summary>
+        /// <param name="parameterNum">Parameters absolute positon (0 is opcode)</param>
+        /// <returns>The value read according to mode.</returns>
+        private int GetValue(int parameterNum)
+        {
+            var param = memory[instructionPointer + parameterNum];
+            var value = (instruction.Mode[parameterNum - 1]) switch
+            {
+                Mode.Position => memory[param],
+                Mode.Immediate => param,
+                Mode.Relative => memory[relativeBase + param],
+                _ => throw new Exception($"Unknown position mode [{instruction.Mode[parameterNum - 1]}"),
+            };
+            return value;
         }
 
         private Instruction GetCurrentInstruction()
@@ -417,6 +431,8 @@ namespace AdventOfCode.Intcode
                     return new Instruction(Operation.LessThan, GetModes(modesraw, 2));
                 case 8:
                     return new Instruction(Operation.Equals, GetModes(modesraw, 2));
+                case 9:
+                    return new Instruction(Operation.AdjustRelativeBase, GetModes(modesraw, 1));
                 case 99:
                     return new Instruction(Operation.Halt, null);
                 default:
@@ -459,6 +475,12 @@ namespace AdventOfCode.Intcode
                     modes[i] = Mode.Immediate;
                     raw /= 10;
                 }
+                else if (raw % 10 == 2)
+                {
+                    // Last digit is 2 -> Relative mode
+                    modes[i] = Mode.Relative;
+                    raw /= 10;
+                }
                 else
                 {
                     throw new Exception($"Unknown mode in instruction [{raw}] (last digit must be <= 1)");
@@ -478,6 +500,7 @@ namespace AdventOfCode.Intcode
         LessThan,
         Equals,
         Halt,
+        AdjustRelativeBase,
         Unknown,
     }
 
@@ -485,5 +508,6 @@ namespace AdventOfCode.Intcode
     {
         Position,
         Immediate,
+        Relative,
     }
 }
