@@ -1,7 +1,7 @@
 # AdventOfCode2019
 
 ## Runtime using i7-8650U @1.9GHz stock. See [Benchmark](Benchmark.md) for detials.
-|                                |         | TextExplorer | Benchmark |
+|                                |         | TestExplorer | Benchmark |
 |--------------------------------|---------|-------------:|----------:|
 | [Day01](AdventOfCode/Day01.cs) | Puzzle1 |         <1ms |      12µs |
 |                                | Puzzle2 |         <1ms |      13µs |
@@ -17,3 +17,5 @@
 |                                | Puzzle2 |          1ms |     815µs |
 | [Day07](AdventOfCode/Day07.cs) | Puzzle1 |         17ms |     910µs |
 |                                | Puzzle2 |         61ms |      31ms |
+| [Day08](AdventOfCode/Day08.cs) | Puzzle1 |          3ms |           |
+|                                | Puzzle2 |              |           |
