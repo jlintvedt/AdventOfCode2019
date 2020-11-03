@@ -331,5 +331,37 @@ namespace AdventOfCodeTests
             Assert.AreEqual(1000, intcode.ExecuteProgram_InputOutput(8));
             Assert.AreEqual(1001, intcode.ExecuteProgram_InputOutput(9));
         }
+
+        [TestMethod]
+        public void ExecuteProgram_RelativePositions()
+        {
+            // Arrange
+            // Takes no input and produces a copy of itself as output.
+            var program = "109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99";
+            var intcode = new Intcode.Interpreter(program, memorySize: 200);
+
+            // Act
+            intcode.ExecuteProgram();
+            var output = intcode.GetAllOutput(",");
+
+            // Assert
+            Assert.AreEqual($"{program},", output);
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_LargeNumbers()
+        {
+            // Arrange
+            // Should output a 16-digit number.
+            var program = "1102,34915192,34915192,7,4,7,99,0";
+            var intcode = new Intcode.Interpreter(program, memorySize: 200);
+
+            // Act
+            intcode.ExecuteProgram();
+            var output = intcode.GetLastOutput();
+
+            // Assert
+            Assert.AreEqual(1219070632396864, output);
+        }
     }
 }

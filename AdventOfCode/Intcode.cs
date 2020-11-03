@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -8,25 +9,33 @@ namespace AdventOfCode.Intcode
 {
     public class Interpreter
     {
-        private readonly int[] initialMemory;
-        private readonly int[] memory;
+        private readonly long[] initialMemory;
+        private readonly long[] memory;
 
-        private int instructionPointer;
+        private long instructionPointer;
         private Instruction instruction;
-        private int relativeBase;
+        private long relativeBase;
 
         public int numInstructionsExecuted;
 
-        public Channel<int> InputChannel;
-        public Channel<int> OutputChannel;
+        public Channel<long> InputChannel;
+        public Channel<long> OutputChannel;
 
-        public Interpreter(string programString, Channel<int> inputChannel = null, Channel<int> outputChannel = null)
+        public Interpreter(string programString, Channel<long> inputChannel = null, Channel<long> outputChannel = null, int? memorySize = null)
         {
-            InputChannel = inputChannel ?? Channel.CreateUnbounded<int>();
-            OutputChannel = outputChannel ?? Channel.CreateUnbounded<int>();
+            InputChannel = inputChannel ?? Channel.CreateUnbounded<long>();
+            OutputChannel = outputChannel ?? Channel.CreateUnbounded<long>();
 
-            initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
-            memory = new int[initialMemory.Length];
+            if (memorySize == null)
+            {
+                initialMemory = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt64(i)).ToArray();
+            } else
+            {
+                initialMemory = new long[(long)memorySize];
+                var tmp = programString.Split(new[] { "," }, StringSplitOptions.None).Select(i => Convert.ToInt32(i)).ToArray();
+                tmp.CopyTo(initialMemory, 0);
+            }
+            memory = new long[initialMemory.Length];
             ResetMemory();
         }
 
@@ -39,7 +48,7 @@ namespace AdventOfCode.Intcode
             instruction = GetCurrentInstruction();
         }
 
-        public void SetInput(int input)
+        public void SetInput(long input)
         {
             if (!InputChannel.Writer.TryWrite(input))
             {
@@ -47,20 +56,28 @@ namespace AdventOfCode.Intcode
             }
         }
 
-        public int GetOutput()
+        public long GetOutput()
         {
-            if (!OutputChannel.Reader.TryRead(out int output))
+            if (!OutputChannel.Reader.TryRead(out long output))
             {
                 throw new Exception("Program executed to halt, but provided no output");
             }
             return output;
         }
 
-        public int GetLastOutput()
+        public long GetLastOutput()
         {
-            int last = Int32.MinValue;
-            while (OutputChannel.Reader.TryRead(out int output)) { last = output; }
+            var last = Int64.MinValue;
+            while (OutputChannel.Reader.TryRead(out long output)) { last = output; }
             return last;
+        }
+
+        public string GetAllOutput(string delim = ",")
+        {
+
+            var sb = new StringBuilder();
+            while (OutputChannel.Reader.TryRead(out long output)) { sb.Append(output); sb.Append(","); }
+            return sb.ToString();
         }
 
         public string GenerateProgramString()
@@ -84,7 +101,7 @@ namespace AdventOfCode.Intcode
             }
         }
 
-        public int ExecuteProgram_NounVerb(int noun, int verb, int maxInstructions = 1000, bool resetMemory = true)
+        public long ExecuteProgram_NounVerb(int noun, int verb, int maxInstructions = 1000, bool resetMemory = true)
         {
             if (resetMemory)
             {
@@ -104,7 +121,7 @@ namespace AdventOfCode.Intcode
             return GetParameter(0);
         }
 
-        public int ExecuteProgram_InputOutput(int input, int maxInstructions = 1000, bool resetMemory = true)
+        public long ExecuteProgram_InputOutput(long input, int maxInstructions = 1000, bool resetMemory = true)
         {
             if (resetMemory)
             {
@@ -118,7 +135,7 @@ namespace AdventOfCode.Intcode
             return GetLastOutput();
         }
 
-        public async Task ExecuteProgram_StartAsync(int input, int maxInstructions = 1000, bool resetMemory = true)
+        public async Task ExecuteProgram_StartAsync(long input, int maxInstructions = 1000, bool resetMemory = true)
         {
             if (resetMemory)
             {
@@ -175,7 +192,7 @@ namespace AdventOfCode.Intcode
             memory[address] = parameter;
         }
 
-        private int GetParameter(int address)
+        private long GetParameter(int address)
         {
             return memory[address];
         }
@@ -186,7 +203,7 @@ namespace AdventOfCode.Intcode
             instruction = GetCurrentInstruction();
         }
 
-        private void SetInstructionPointer(int newPos)
+        private void SetInstructionPointer(long newPos)
         {
             instructionPointer = newPos;
             instruction = GetCurrentInstruction();
@@ -318,7 +335,7 @@ namespace AdventOfCode.Intcode
         /// </summary>
         /// <param name="parameterNum">Parameters absolute positon (0 is opcode)</param>
         /// <returns>The value read according to mode.</returns>
-        private int GetValue(int parameterNum)
+        private long GetValue(int parameterNum)
         {
             var param = memory[instructionPointer + parameterNum];
             var value = (instruction.Mode[parameterNum - 1]) switch
@@ -333,7 +350,7 @@ namespace AdventOfCode.Intcode
 
         private Instruction GetCurrentInstruction()
         {
-            return InstructionParser.GetInstruction(memory[instructionPointer]);
+            return InstructionParser.GetInstruction((int)memory[instructionPointer]);
         }
     }
 

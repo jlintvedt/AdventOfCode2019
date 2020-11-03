@@ -12,12 +12,12 @@ namespace AdventOfCode
     /// </summary>
     public class Day07
     {
-        static IEnumerable<IEnumerable<int>> phasePermutationsLow = Common.Common.GetPermutations(new List<int>() { 0, 1, 2, 3, 4 }, 5);
-        static IEnumerable<IEnumerable<int>> phasePermutationsHigh = Common.Common.GetPermutations(new List<int>() { 5, 6, 7, 8, 9 }, 5);
+        static IEnumerable<IEnumerable<long>> phasePermutationsLow = Common.Common.GetPermutations(new List<long>() { 0, 1, 2, 3, 4 }, 5);
+        static IEnumerable<IEnumerable<long>> phasePermutationsHigh = Common.Common.GetPermutations(new List<long>() { 5, 6, 7, 8, 9 }, 5);
 
-        public static int ExecuteAmplifierSequence(Intcode.Interpreter intcode, IEnumerable<int> phases)
+        public static long ExecuteAmplifierSequence(Intcode.Interpreter intcode, IEnumerable<long> phases)
         {
-            var inputOutput = 0;
+            long inputOutput = 0;
             foreach (var phase in phases)
             {
                 intcode.SetInput(phase);
@@ -30,7 +30,7 @@ namespace AdventOfCode
         public static string Puzzle1(string input)
         {
             var intcode = new Intcode.Interpreter(input);
-            int highestSignal = 0;
+            long highestSignal = 0;
 
             foreach (var phaseSettings in phasePermutationsLow)
             {
@@ -47,13 +47,13 @@ namespace AdventOfCode
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            var outCh = Channel.CreateUnbounded<int>();
+            var outCh = Channel.CreateUnbounded<long>();
             var ampA = new Intcode.Interpreter(input, inputChannel: outCh);
             var ampB = new Intcode.Interpreter(input, inputChannel: ampA.OutputChannel);
             var ampC = new Intcode.Interpreter(input, inputChannel: ampB.OutputChannel);
             var ampD = new Intcode.Interpreter(input, inputChannel: ampC.OutputChannel);
             var ampE = new Intcode.Interpreter(input, inputChannel: ampD.OutputChannel, outputChannel: outCh);
-            int highestSignal = 0;
+            long highestSignal = 0;
 
             foreach (var phaseSettings in phasePermutationsHigh)
             {
