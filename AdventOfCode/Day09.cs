@@ -19,7 +19,9 @@ namespace AdventOfCode
         // == == == == == Puzzle 2 == == == == ==
         public static string Puzzle2(string input)
         {
-            return input + "_Puzzle2";
+            var intcode = new Intcode.Interpreter(input, memorySize: 1100);
+            var keycode = intcode.ExecuteProgram_InputOutput(2, maxInstructions: 1000000);
+            return keycode.ToString();
         }
     }
 }
