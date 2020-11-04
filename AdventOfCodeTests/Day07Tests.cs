@@ -99,7 +99,5 @@ namespace AdventOfCodeTests
             // Assert
             Assert.AreEqual("18216", result);
         }
-
-
     }
 }

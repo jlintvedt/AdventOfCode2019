@@ -85,7 +85,7 @@ namespace AdventOfCode.Intcode
             return string.Join(",", memory);
         }
 
-        public async Task ExecuteProgram(int maxInstructions = 1000)
+        public void ExecuteProgram(int maxInstructions = 1000)
         {
             while (instruction.Operation != Operation.Halt)
             {
@@ -97,7 +97,23 @@ namespace AdventOfCode.Intcode
                 {
                     throw new Exception($"Max instructions [{maxInstructions}] reached. Aborting");
                 }
-                await ExecuteInstruction();
+                ExecuteInstruction();
+            }
+        }
+
+        public async Task ExecuteProgramAsync(int maxInstructions = 1000)
+        {
+            while (instruction.Operation != Operation.Halt)
+            {
+                if (instruction.Operation == Operation.Unknown)
+                {
+                    throw new Exception($"Unknown instruction [{instruction.Operation}:{memory[instructionPointer]}   pos:{instructionPointer}]");
+                }
+                else if (numInstructionsExecuted > maxInstructions)
+                {
+                    throw new Exception($"Max instructions [{maxInstructions}] reached. Aborting");
+                }
+                await ExecuteInstructionAsync();
             }
         }
 
@@ -116,7 +132,7 @@ namespace AdventOfCode.Intcode
             SetParamater(1, noun);
             SetParamater(2, verb);
 
-            AsyncHelper.RunSync(() => ExecuteProgram(maxInstructions).ConfigureAwait(false));
+            ExecuteProgram(maxInstructions);
 
             return GetParameter(0);
         }
@@ -130,7 +146,7 @@ namespace AdventOfCode.Intcode
 
             SetInput(input);
 
-            AsyncHelper.RunSync(() => ExecuteProgram(maxInstructions));
+            ExecuteProgram(maxInstructions);
 
             return GetLastOutput();
         }
@@ -144,10 +160,47 @@ namespace AdventOfCode.Intcode
 
             SetInput(input);
 
-            await ExecuteProgram(maxInstructions);
+            await ExecuteProgramAsync(maxInstructions);
         }
 
-        public async Task ExecuteInstruction()
+        public void ExecuteInstruction()
+        {
+            switch (instruction.Operation)
+            {
+                case Operation.Input:
+                    AsyncHelper.RunSync(() => PerformInstructionInput());
+                    break;
+                case Operation.Output:
+                    AsyncHelper.RunSync(() => PerformInstructionOutput());
+                    break;
+                default:
+                    ExecuteInstructionInner();
+                    break;
+            }
+            numInstructionsExecuted++;
+        }
+
+        public async Task ExecuteInstructionAsync()
+        {
+            switch (instruction.Operation)
+            {
+                case Operation.Input:
+                    await PerformInstructionInput();
+                    break;
+                case Operation.Output:
+                    await PerformInstructionOutput();
+                    break;
+                default:
+                    await Task.Run(() => ExecuteInstructionInner());
+                    break;
+            }
+            numInstructionsExecuted++;
+        }
+
+        /// <summary>
+        /// ExecuteInstructionInner executes non-blocking instructions (non-async methods).
+        /// </summary>
+        private void ExecuteInstructionInner()
         {
             switch (instruction.Operation)
             {
@@ -156,12 +209,6 @@ namespace AdventOfCode.Intcode
                     break;
                 case Operation.Multiply:
                     PerformInstructionMultiply();
-                    break;
-                case Operation.Input:
-                    await PerformInstructionInput();
-                    break;
-                case Operation.Output:
-                    await PerformInstructionOutput();
                     break;
                 case Operation.JumpIfTrue:
                     PerformInstructionJumpIfTrue();
@@ -178,13 +225,14 @@ namespace AdventOfCode.Intcode
                 case Operation.AdjustRelativeBase:
                     PerformInstructionAdjustRelativeBase();
                     break;
+                case Operation.Input:
+                case Operation.Output:
+                    throw new Exception("These operations has be be handled differently based on async/sync");
                 case Operation.Halt:
                 case Operation.Unknown:
                 default:
                     throw new Exception($"Cannot execute on instruction [{instruction.Operation}-{memory[instructionPointer]}   pos:{instructionPointer}]");
             }
-
-            numInstructionsExecuted++;
         }
 
         private void SetParamater(int address, int parameter)

@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode
 {
+    /// <summary>
+    /// Source: https://cpratt.co/async-tips-tricks/
+    /// </summary>
     public static class AsyncHelper
     {
         private static readonly TaskFactory _taskFactory = new
