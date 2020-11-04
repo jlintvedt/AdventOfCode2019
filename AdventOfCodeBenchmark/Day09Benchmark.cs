@@ -7,13 +7,13 @@ namespace AdventOfCodeBenchmark
     {
         string input;
 
-        [Params(100000)]
+        [Params(1000)]
         public int N;
 
         [GlobalSetup]
         public void Setup()
         {
-            input = AdventOfCodeTests.Resources.Input.D00_Puzzle;
+            input = AdventOfCodeTests.Resources.Input.D09_Puzzle;
         }
 
         [Benchmark]

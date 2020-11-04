@@ -9,7 +9,7 @@ namespace AdventOfCodeBenchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<Day06Benchmark>();
+            var summary = BenchmarkRunner.Run<Day09Benchmark>();
             //summary = BenchmarkRunner.Run<Day05Benchmark>();
             //summary = BenchmarkRunner.Run<Day07Benchmark>();
 
