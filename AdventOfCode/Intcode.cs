@@ -116,7 +116,7 @@ namespace AdventOfCode.Intcode
             SetParamater(1, noun);
             SetParamater(2, verb);
 
-            ExecuteProgram(maxInstructions);
+            AsyncHelper.RunSync(() => ExecuteProgram(maxInstructions).ConfigureAwait(false));
 
             return GetParameter(0);
         }
@@ -130,7 +130,7 @@ namespace AdventOfCode.Intcode
 
             SetInput(input);
 
-            ExecuteProgram(maxInstructions);
+            AsyncHelper.RunSync(() => ExecuteProgram(maxInstructions));
 
             return GetLastOutput();
         }
@@ -215,11 +215,11 @@ namespace AdventOfCode.Intcode
             var value1 = GetValue(1);
             var value2 = GetValue(2);
 
-            // Params
-            var param3 = memory[instructionPointer + 3];
+            // Memory position
+            var pos = GetMemoryPosition(3);
 
             // Execute
-            memory[param3] = value1 + value2;
+            memory[pos] = value1 + value2;
             MoveInstructionPointer(4);
         }
 
@@ -229,21 +229,21 @@ namespace AdventOfCode.Intcode
             var value1 = GetValue(1);
             var value2 = GetValue(2);
 
-            // Params
-            var param3 = memory[instructionPointer + 3];
+            // Memory position
+            var pos = GetMemoryPosition(3);
 
             // Execute
-            memory[param3] = value1 * value2;
+            memory[pos] = value1 * value2;
             MoveInstructionPointer(4);
         }
 
         private async Task PerformInstructionInput()
         {
-            // Params
-            var param1 = memory[instructionPointer + 1];
+            // Memory position
+            var pos = GetMemoryPosition(1);
 
             // Execute
-            memory[param1] = await InputChannel.Reader.ReadAsync();
+            memory[pos] = await InputChannel.Reader.ReadAsync();
 
             MoveInstructionPointer(2);
         }
@@ -298,11 +298,11 @@ namespace AdventOfCode.Intcode
             var value1 = GetValue(1);
             var value2 = GetValue(2);
 
-            // Params
-            var param3 = memory[instructionPointer + 3];
+            // Memory position
+            var pos = GetMemoryPosition(3);
 
             // Execute
-            memory[param3] = value1 < value2 ? 1 : 0;
+            memory[pos] = value1 < value2 ? 1 : 0;
             MoveInstructionPointer(4);
         }
 
@@ -312,11 +312,11 @@ namespace AdventOfCode.Intcode
             var value1 = GetValue(1);
             var value2 = GetValue(2);
 
-            // Params
-            var param3 = memory[instructionPointer + 3];
+            // Memory position
+            var pos = GetMemoryPosition(3);
 
             // Execute
-            memory[param3] = value1 == value2 ? 1 : 0;
+            memory[pos] = value1 == value2 ? 1 : 0;
             MoveInstructionPointer(4);
         }
 
@@ -346,6 +346,20 @@ namespace AdventOfCode.Intcode
                 _ => throw new Exception($"Unknown position mode [{instruction.Mode[parameterNum - 1]}"),
             };
             return value;
+        }
+
+        private long GetMemoryPosition(int parameterNum)
+        {
+            var pos = memory[instructionPointer + parameterNum];
+            if (instruction.Mode[parameterNum-1] == Mode.Relative)
+            {
+                pos += relativeBase;
+            }
+            if (pos >= memory.Length)
+            {
+                throw new Exception($"Tried to set memory position [{pos}], outside limit of [{memory.Length-1}]");
+            }
+            return pos;
         }
 
         private Instruction GetCurrentInstruction()
@@ -414,14 +428,20 @@ namespace AdventOfCode.Intcode
             { 1, new Mode[1] { Mode.Immediate } },
             { 10, new Mode[2] { Mode.Position, Mode.Immediate } },
             { 11, new Mode[2] { Mode.Immediate, Mode.Immediate } },
+
+            { 2, new Mode[] { Mode.Relative } },
+            { 12, new Mode[] { Mode.Relative, Mode.Immediate } },
+            { 21, new Mode[] { Mode.Immediate, Mode.Relative } },
+            { 211, new Mode[] { Mode.Immediate, Mode.Immediate, Mode.Relative } },
         };
 
         public static Instruction GetInstruction(int rawInstruction)
         {
-            if (KnownInstructions.TryGetValue(rawInstruction, out Instruction inst))
-            {
-                return inst;
-            }
+            // Performance optimization: Disabled as it's missing RelativePosition support
+            //if (KnownInstructions.TryGetValue(rawInstruction, out Instruction inst))
+            //{
+            //    return inst;
+            //}
             return ParseInstruction(rawInstruction);
         }
 
@@ -433,11 +453,11 @@ namespace AdventOfCode.Intcode
             switch (opcode)
             {
                 case 1:
-                    return new Instruction(Operation.Add, GetModes(modesraw, 2));
+                    return new Instruction(Operation.Add, GetModes(modesraw, 3));
                 case 2:
-                    return new Instruction(Operation.Multiply, GetModes(modesraw, 2));
+                    return new Instruction(Operation.Multiply, GetModes(modesraw, 3));
                 case 3:
-                    return new Instruction(Operation.Input, null);
+                    return new Instruction(Operation.Input, GetModes(modesraw, 1));
                 case 4:
                     return new Instruction(Operation.Output, GetModes(modesraw, 1));
                 case 5:
@@ -445,9 +465,9 @@ namespace AdventOfCode.Intcode
                 case 6:
                     return new Instruction(Operation.JumpIfFalse, GetModes(modesraw, 2));
                 case 7:
-                    return new Instruction(Operation.LessThan, GetModes(modesraw, 2));
+                    return new Instruction(Operation.LessThan, GetModes(modesraw, 3));
                 case 8:
-                    return new Instruction(Operation.Equals, GetModes(modesraw, 2));
+                    return new Instruction(Operation.Equals, GetModes(modesraw, 3));
                 case 9:
                     return new Instruction(Operation.AdjustRelativeBase, GetModes(modesraw, 1));
                 case 99:

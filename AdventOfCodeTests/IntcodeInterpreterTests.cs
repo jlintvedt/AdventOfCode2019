@@ -349,12 +349,28 @@ namespace AdventOfCodeTests
         }
 
         [TestMethod]
-        public void ExecuteProgram_LargeNumbers()
+        public void ExecuteProgram_LargeNumber()
+        {
+            // Arrange
+            // Should the large number in the middle.
+            var program = "104,1125899906842624,99";
+            var intcode = new Intcode.Interpreter(program);
+
+            // Act
+            intcode.ExecuteProgram();
+            var output = intcode.GetLastOutput();
+
+            // Assert
+            Assert.AreEqual(1125899906842624, output);
+        }
+
+        [TestMethod]
+        public void ExecuteProgram_LargeNumbersMultiplication()
         {
             // Arrange
             // Should output a 16-digit number.
             var program = "1102,34915192,34915192,7,4,7,99,0";
-            var intcode = new Intcode.Interpreter(program, memorySize: 200);
+            var intcode = new Intcode.Interpreter(program);
 
             // Act
             intcode.ExecuteProgram();
