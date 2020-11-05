@@ -292,5 +292,71 @@ namespace AdventOfCodeTests.Resources {
                 return ResourceManager.GetString("D09_Puzzle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .#..#{0}.....{0}#####{0}....#{0}...##.
+        /// </summary>
+        public static string D10_E1 {
+            get {
+                return ResourceManager.GetString("D10_E1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ......#.#.{0}#..#.#....{0}..#######.{0}.#.#.###..{0}.#..#.....{0}..#....#.#{0}#..#....#.{0}.##.#..###{0}##...#..#.{0}.#....####.
+        /// </summary>
+        public static string D10_E2 {
+            get {
+                return ResourceManager.GetString("D10_E2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #.#...#.#.{0}.###....#.{0}.#....#...{0}##.#.#.#.#{0}....#.#.#.{0}.##..###.#{0}..#...##..{0}..##....##{0}......#...{0}.####.###..
+        /// </summary>
+        public static string D10_E3 {
+            get {
+                return ResourceManager.GetString("D10_E3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .#..#..###{0}####.###.#{0}....###.#.{0}..###.##.#{0}##.##.#.#.{0}....###..#{0}..#.#..#.#{0}#..#.#.###{0}.##...##.#{0}.....#.#...
+        /// </summary>
+        public static string D10_E4 {
+            get {
+                return ResourceManager.GetString("D10_E4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .#..##.###...#######{0}##.############..##.{0}.#.######.########.#{0}.###.#######.####.#.{0}#####.##.#.##.###.##{0}..#####..#.#########{0}####################{0}#.####....###.#.#.##{0}##.#################{0}#####.##.###..####..{0}..######..##.#######{0}####.##.####...##..#{0}.#####..#.######.###{0}##...#.##########...{0}#.##########.#######{0}.####.#.###.###.#.##{0}....##.##.###..#####{0}.#.#.###########.###{0}#.#.#.#####.####.###{0}###.##.####.##.#..##.
+        /// </summary>
+        public static string D10_E5 {
+            get {
+                return ResourceManager.GetString("D10_E5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ##.###.#.......#.#....#....#..........#.
+        ///....#..#..#.....#.##.............#......
+        ///...#.#..###..#..#.....#........#......#.
+        ///#......#.....#.##.#.##.##...#...#......#
+        ///.............#....#.....#.#......#.#....
+        ///..##.....#..#..#.#.#....##.......#.....#
+        ///.#........#...#...#.#.....#.....#.#..#.#
+        ///...#...........#....#..#.#..#...##.#.#..
+        ///#.##.#.#...#..#...........#..........#..
+        ///........#.#..#..##.#.##......##.........
+        ///................#.##.#....##.......#....
+        ///#............#.........###...#...#.....#
+        ///#....#.. [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string D10_Puzzle {
+            get {
+                return ResourceManager.GetString("D10_Puzzle", resourceCulture);
+            }
+        }
     }
 }
