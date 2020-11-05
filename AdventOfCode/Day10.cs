@@ -13,7 +13,6 @@ namespace AdventOfCode
         public class MonitoringStation
         {
             public List<(int x,int y)> asteroids;
-            private HashSet<(bool, float)> yRatios;
 
             public MonitoringStation(string mapRaw)
             {
@@ -51,42 +50,34 @@ namespace AdventOfCode
 
             public int NumDetectableAsteroids((int x, int y) asteroid)
             {
-                var yRatiosLeft = new HashSet<float>();
-                var yRatiosRight = new HashSet<float>();
+                var yRatios = new HashSet<(bool, float)>();
 
-                int above = 0, below = 0;
-
-                foreach (var other in asteroids)
+                foreach (var (x, y) in asteroids)
                 {
-                    float dx = other.x - asteroid.x;
-                    float dy = other.y - asteroid.y;
-                    // Check edge for self and edge cases
+                    int dx = x - asteroid.x;
+                    int dy = y - asteroid.y;
+                    bool xPositive = dx >= 0;
+                    int xAbs = xPositive ? dx : -dx;
+                    float yRatio = 0;
+
+                    // edge cases: self or located directly vertical
                     if (dx == 0)
                     {
                         if (dy == 0)
                         {
-                            // Self
                             continue;
                         }
-                        else if (dy < 0)
-                        {
-                            above = 1;
-                        }
-                        else
-                        {
-                            below = 1;
-                        }
+                        yRatio = dy < 0 ? float.MinValue : float.MaxValue;
                     }
-                    else if (dx < 0)
+                    // located at an angle (neither horizontal nor vertical)
+                    else if (dy != 0)
                     {
-                        yRatiosLeft.Add(dy / dx);
+                        yRatio = (float)dy / xAbs;
                     }
-                    else
-                    {
-                        yRatiosRight.Add(dy / dx);
-                    }
+
+                    yRatios.Add((xPositive, yRatio));
                 }
-                return yRatiosLeft.Count + yRatiosRight.Count + above + below;
+                return yRatios.Count;
             }
         }
 
