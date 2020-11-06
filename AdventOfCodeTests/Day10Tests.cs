@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace AdventOfCodeTests
 {
@@ -96,20 +96,20 @@ namespace AdventOfCodeTests
         public void Puzzle2()
         {
             // Act
-            var result = AdventOfCode.Day10.Puzzle2(input_puzzle);
+            var result = AdventOfCode.Day10.Puzzle2(input_puzzle, (31,20));
 
             // Assert
-            Assert.AreEqual($"{input_puzzle}_Puzzle2", result);
+            Assert.AreEqual("517", result);
         }
 
         [TestMethod]
         public void Puzzle2_Example()
         {
             // Act
-            var result = AdventOfCode.Day10.Puzzle2(input_example2);
+            var result = AdventOfCode.Day10.Puzzle2(input_example5, (11,13));
 
             // Assert
-            Assert.AreEqual($"{input_example2}_Puzzle2", result);
+            Assert.AreEqual("802", result);
         }
 
         [TestMethod]
@@ -129,6 +129,58 @@ namespace AdventOfCodeTests
             Assert.AreEqual(7, ms.NumDetectableAsteroids((4, 3)));
             Assert.AreEqual(8, ms.NumDetectableAsteroids((3, 4)));
             Assert.AreEqual(7, ms.NumDetectableAsteroids((4, 4)));
+        }
+
+        [TestMethod]
+        public void CalculateDiastanceAndRadian_AlligedPoints_HasSameRadian()
+        {
+            // Arrange
+            var origin = (5, 5);
+
+            var allignedPoints = new List<(int, int)>()
+            {
+                (5, 4),(5, 3), // Up
+                (6, 3),(7, 1), // Up Up Right
+                (6, 4),(7, 3), // Up right
+                (7, 4),(9, 3), // Up Right Right
+                (6, 5),(7, 5), // Right
+                (6, 6),(7, 7), // Down Right
+                (5, 6),(5, 7), // Down
+                (4, 6),(3, 7), // Down Left
+                (4, 5),(3, 5), // Left
+                (4, 4),(3, 3), // Up Left
+            };
+
+            for (int i = 0; i < allignedPoints.Count/2; i++)
+            {
+                var (len, rad) = AdventOfCode.Day10.MonitoringStation.CalculateDiastanceAndRadian(origin, allignedPoints[i*2]);
+                var (len2, rad2) = AdventOfCode.Day10.MonitoringStation.CalculateDiastanceAndRadian(origin, allignedPoints[i*2+1]);
+                Assert.AreEqual(rad, rad2);
+            }
+
+        }
+
+        [TestMethod]
+        public void CalculateDiastanceAndRadian_AroundTheClock()
+        {
+            // Arrange
+            var origin = (5, 5);
+            var prevRad = -1.0;
+
+            var roundTheClock = new List<(int, int)>() {
+                (5,1), (6,2), (7,3), (8,4),
+                (9,5), (8,6), (7,7), (6,8),
+                (5,9), (4,8), (3,7), (2,6),
+                (1,5), (2,4), (3,3), (4,2)
+            };
+
+            // Act & Assert
+            foreach (var point in roundTheClock)
+            {
+                var (len, radian) = AdventOfCode.Day10.MonitoringStation.CalculateDiastanceAndRadian(origin, point);
+                Assert.IsTrue(prevRad < radian);
+                prevRad = radian;
+            }
         }
     }
 }

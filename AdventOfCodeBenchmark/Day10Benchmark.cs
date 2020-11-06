@@ -20,6 +20,6 @@ namespace AdventOfCodeBenchmark
         public string D00_P1() => Day10.Puzzle1(input);
 
         [Benchmark]
-        public string D00_P2() => Day10.Puzzle2(input);
+        public string D00_P2() => Day10.Puzzle2(input, (31,20));
     }
 }
