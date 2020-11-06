@@ -13,13 +13,13 @@ namespace AdventOfCodeBenchmark
         [GlobalSetup]
         public void Setup()
         {
-            input = AdventOfCodeTests.Resources.Input.D00_Puzzle;
+            input = AdventOfCodeTests.Resources.Input.D08_Puzzle;
         }
 
         [Benchmark]
-        public string D00_P1() => Day08.Puzzle1(input);
+        public string D08_P1() => Day08.Puzzle1(input);
 
         [Benchmark]
-        public string D00_P2() => Day08.Puzzle2(input);
+        public string D08_P2() => Day08.Puzzle2(input);
     }
 }

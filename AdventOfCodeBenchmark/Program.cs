@@ -1,7 +1,4 @@
-﻿using System;
-using AdventOfCode;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 
 namespace AdventOfCodeBenchmark
 {
@@ -9,11 +6,7 @@ namespace AdventOfCodeBenchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<Day09Benchmark>();
-            //summary = BenchmarkRunner.Run<Day05Benchmark>();
-            //summary = BenchmarkRunner.Run<Day07Benchmark>();
-
-            //var result = Day02.Puzzle2(AdventOfCodeTests.Resources.Input.D02_Puzzle);
+            var summary = BenchmarkRunner.Run<Day10Benchmark>();
         }
     }
 }

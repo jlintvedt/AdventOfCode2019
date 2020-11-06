@@ -7,7 +7,7 @@ namespace AdventOfCodeBenchmark
     {
         string input;
 
-        [Params(1000)]
+        [Params(10000)]
         public int N;
 
         [GlobalSetup]
@@ -17,9 +17,9 @@ namespace AdventOfCodeBenchmark
         }
 
         [Benchmark]
-        public string D00_P1() => Day10.Puzzle1(input);
+        public string D10_P1() => Day10.Puzzle1(input);
 
         [Benchmark]
-        public string D00_P2() => Day10.Puzzle2(input, (31,20));
+        public string D10_P2() => Day10.Puzzle2(input, (31,20));
     }
 }
